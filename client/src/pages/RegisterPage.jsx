@@ -14,7 +14,9 @@ const RegisterPage = () => {
     console.log("Admin login attempt with data:", data);
     try {
       const newUser = await register(data);
-      console.log(newUser)
+      localStorage.setItem("user", JSON.stringify(newUser));
+      navigate("/verify");
+      console.log(newUser);
     } catch (error) {
       console.error("Login failed:", error);
       console.error("Error response:", error.response);

@@ -1,20 +1,19 @@
-// src/store/adminSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  admin: null, // Initial state for admin details
-  isLoading: false, // Loading state for async operations
-  error: null, // Error state for handling errors
+  user: null,
+  isLoading: false,
+  error: null,
 };
 
-const adminSlice = createSlice({
+const userSlice = createSlice({
   name: "admin",
   initialState,
   reducers: {
-    setAdminDetails(state, action) {
+    setUserDetails(state, action) {
       state.admin = action.payload; // Set admin details
     },
-    clearAdminDetails(state) {
+    clearUserDetails(state) {
       state.admin = null; // Clear admin details on signout
     },
     setLoading(state, action) {
@@ -31,12 +30,12 @@ const adminSlice = createSlice({
 
 // Export actions
 export const {
-  setAdminDetails,
-  clearAdminDetails,
+  setUserDetails,
+  clearUserDetails,
   setLoading,
   setError,
   clearError,
-} = adminSlice.actions;
+} = userSlice.actions;
 
 // Export reducer
-export default adminSlice.reducer;
+export default userSlice.reducer;

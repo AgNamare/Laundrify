@@ -1,6 +1,13 @@
 import { useMutation } from "react-query";
 import axios from "@/api/axios.js";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import {
+  setUserDetails,
+  setLoading,
+  setError,
+  clearError,
+} from "../redux/userSlice"; // Import Redux actionsl
 
 export const useRegister = () => {
   const registerRequest = async (userData) => {
@@ -26,4 +33,72 @@ export const useRegister = () => {
   );
 
   return { register, isRegistering };
+};
+
+const loginRequest = async (userData) => {
+  const response = await axios.post("/api/v1/auth/login", userData);
+  return response.data;
+};
+
+export const useLogin = () => {
+  const dispatch = useDispatch();
+
+  const { mutateAsync: login, isLoading: isLoggingIn } = useMutation(
+    loginRequest,
+    {
+      onMutate: () => {
+        dispatch(setLoading(true));
+        dispatch(clearError());
+      },
+      onSuccess: (data) => {
+        if (data.success) {
+          dispatch(setUserDetails(data.user));
+          toast.success("Login Successful");
+        } else {
+          dispatch(setError(data.message));
+          toast.error(data.message);
+        }
+      },
+      onError: (error) => {
+        const errorMessage =
+          error.response?.data?.message || "An error occurred";
+        dispatch(setError(errorMessage));
+        toast.error(errorMessage);
+      },
+      onSettled: () => {
+        dispatch(setLoading(false));
+      },
+    }
+  );
+
+  return { login, isLoggingIn };
+};
+
+const verifyCodeRequest = async (verificationData) => {
+  const response = await axios.post(
+    "/api/v1/auth/verify-code",
+    verificationData
+  );
+  return response.data;
+};
+
+export const useVerifyCode = () => {
+  const { mutateAsync: verifyCode, isLoading: isVerifying } = useMutation(
+    verifyCodeRequest,
+    {
+      onSuccess: (data) => {
+        if (data.success) {
+          toast.success("Verification Successful");
+        } else {
+          toast.error(data.message);
+        }
+      },
+      onError: (error) => {
+        const errorMessage = error.response?.data || "An error occurred";
+        toast.error(errorMessage);
+      },
+    }
+  );
+
+  return { verifyCode, isVerifying };
 };

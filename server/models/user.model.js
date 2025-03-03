@@ -17,15 +17,23 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true, // Ensure email is unique in this collection as well
+      unique: true,
     },
     password: {
       type: String,
       required: true,
     },
-    createdAt: {
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationCode: {
+      type: Number,
+    },
+    verificationExpiresAt: {
       type: Date,
-      default: Date.now,
+      default: () => new Date(Date.now() + 10 * 60 * 1000), // Expires in 10 minutes
+      index: { expires: "10m" }, // TTL index: Deletes document after 10 minutes
     },
   },
   { timestamps: true }
