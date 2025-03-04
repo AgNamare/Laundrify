@@ -1,11 +1,14 @@
 Laundrify
+
 Laundrify – Your Smart Laundry Companion
 Real-time tracking, effortless scheduling, and a seamless laundry experience—all at your fingertips!
 
 About Laundrify
+
 Laundrify is a smart laundry management platform designed to connect customers with nearby laundromats for a smooth, transparent, and hassle-free experience. With features like real-time order tracking, delivery scheduling, and QR code verification, Laundrify ensures that customers stay informed, and businesses run more efficiently.
 
 Key Features
+
 Location-Based Laundromat Listings – Find nearby laundromats using Google Maps API.
 Real-Time Order Tracking – Follow your laundry’s journey from washing to delivery.
 Secure QR Code Verification – Prevent mix-ups by confirming clothes upon delivery.
