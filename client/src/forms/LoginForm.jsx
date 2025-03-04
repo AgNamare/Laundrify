@@ -2,6 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
+import logo from "../assets/images/logo.png";
+import { Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import Loader from "@/components/Loader";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid Email Address"),
@@ -18,43 +22,78 @@ const LoginForm = ({ onSave, isLoading }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <form onSubmit={handleSubmit(onSave)} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Email
-        </label>
+    <div className="bg-white sm:border sm:border-textSecondary sm:rounded-xl w-full max-w-md mx-auto p-2 space-y-3">
+      {/* Logo */}
+      <div className="flex justify-end mt-6">
+        <Link to="/">
+          <img src={logo} alt="Logo" className="w-32" />
+        </Link>
+      </div>
+
+      {/* Heading */}
+      <div className="flex gap-1 flex-col">
+        <h1 className="text-3xl font-semibold text-textPrimary">Let's get Started</h1>
+        <h3 className="text-textSecondary text-textPrimary">
+          LogIn into your account
+        </h3>
+      </div>
+
+      {/* Form */}
+      <form className="space-y-3" onSubmit={handleSubmit(onSave)}>
         <input
-          type="email"
           {...register("email")}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          type="email"
+          placeholder="Email Address"
+          className={`w-full p-3 rounded-md border ${
+            errors.email ? "border-red-500" : "border-gray-300"
+          }`}
         />
         {errors.email && (
           <p className="text-red-500 text-sm">{errors.email.message}</p>
         )}
-      </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Password
-        </label>
-        <input
-          type={showPassword ? "text" : "password"}
-          {...register("password")}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-        />
+        <div className="relative">
+          <input
+            {...register("password")}
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className={`w-full p-3 rounded-md border ${
+              errors.password ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          <button
+            type="button"
+            className="absolute top-3 right-3 text-gray-500"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+          </button>
+        </div>
         {errors.password && (
           <p className="text-red-500 text-sm">{errors.password.message}</p>
         )}
-      </div>
 
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-      >
-        {isLoading ? "Logging in..." : "Login"}
-      </button>
-    </form>
+        {/* Submit Button */}
+        <button
+          disabled={isLoading}
+          type="submit"
+          className="w-full bg-primary text-white font-semibold py-3 rounded-full mt-4 transition hover:opacity-90"
+        >
+          {isLoading ? <Loader /> : "Login"}
+        </button>
+      </form>
+
+      {/* Register Redirect */}
+      <div className="text-center text-textSecondary">
+        Don't have an account?{" "}
+        <Link
+          to="/register"
+          className="text-primary font-small hover:underline"
+        >
+          Register
+        </Link>
+      </div>
+    </div>
   );
 };
 

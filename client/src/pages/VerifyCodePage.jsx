@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import { useVerifyCode } from "../api/authApi";
 
@@ -52,34 +52,43 @@ const VerifyCodePage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <img src={logo} alt="Laundrify Logo" className="mb-4 w-32" />
-      <h1 className="text-2xl font-semibold mb-2">Verify Your Account</h1>
-      <p className="text-gray-600 mb-4">
-        Enter the 4-digit code sent to your email.
-      </p>
+    <div className="">
+      <div className="flex flex-col items-center justify-center sm:min-h-screen sm:w-full mx-auto">
+        <div className="flex flex-col items-center sm:border border-textSecondary p-8 rounded-xl">
+          <div className="flex justify-end ">
+            <Link to="/">
+              <img src={logo} alt="Logo" className="w-32" />
+            </Link>
+          </div>
+          <h1 className="text-3xl font-semibold mb-2">Verify Your Account</h1>
+          <p className="text-textSecondary mb-4">
+            Enter the 4-digit code sent to your email.
+          </p>
 
-      <div className="flex gap-2">
-        {code.map((digit, index) => (
-          <input
-            key={index}
-            type="text"
-            maxLength="1"
-            className="w-12 h-12 text-xl text-center border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            value={digit}
-            onChange={(e) => handleChange(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
-            ref={(el) => (inputRefs.current[index] = el)}
-          />
-        ))}
+          <div className="flex gap-2">
+            {code.map((digit, index) => (
+              <input
+                key={index}
+                type="text"
+                maxLength="1"
+                className="w-12 h-12 text-xl text-center border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                value={digit}
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                ref={(el) => (inputRefs.current[index] = el)}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={handleSubmit}
+            disabled={isVerifying || code.includes("")}
+            className="w-full bg-primary text-white font-semibold py-3 rounded-full mt-4 transition hover:opacity-90"
+          >
+            {isVerifying ? "Verifying..." : "Verify"}
+          </button>
+        </div>
       </div>
-
-      <button
-        onClick={handleSubmit}
-        disabled={isVerifying || code.includes("")}
-      >
-        {isVerifying ? "Verifying..." : "Verify"}
-      </button>
     </div>
   );
 };

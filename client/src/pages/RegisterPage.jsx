@@ -1,3 +1,4 @@
+
 // src/pages/AdminLoginPage.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,12 +21,11 @@ const RegisterPage = () => {
     } catch (error) {
       console.error("Login failed:", error);
       console.error("Error response:", error.response);
-      // Handle error (e.g., show notification)
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-red-100">
+    <div className="flex sm:min-h-screen items-center justify-center ">
       <RegisterForm onSave={handleRegister} isLoading={isRegistering} />
     </div>
   );
