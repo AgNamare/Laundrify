@@ -27,4 +27,4 @@ Brian Mbaka – Backend Developer
 
 Contact & Support
 Have questions or suggestions? Reach out to us!
-Email: soultech254@outlool.com  Website: [Coming Soon]
+Email: soultech254@outlook.com  Website: [Coming Soon]
