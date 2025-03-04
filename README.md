@@ -16,16 +16,23 @@ Personalized Preferences – Select detergents, softeners, and special care opti
 Business Dashboard – Manage orders, earnings, and customer feedback in one place.
 
 Tech Stack
-Frontend: React.js
-Backend: Node.js  Database: MongoDB
+
+Frontend: React.js, 
+Backend: Node.js  Database: MongoDB, 
 Maps & Location: Google Maps API
 
 Team Members
+
 Mercy Gitonga – Team Lead & UI/UX Designer
+
 Antony Omondi – Frontend Developer
+
 Grace Favour Mwangi – Frontend Developer
+
 Augustine Namare – Full Stack Developer
+
 Mark Kungu – Backend Developer
+
 Brian Mbaka – Backend Developer
 
 Contact & Support
