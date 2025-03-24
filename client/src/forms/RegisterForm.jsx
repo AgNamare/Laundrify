@@ -7,6 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import Loader from "@/components/Loader";
 import { useState } from "react";
 
+// Define form validation schema with role
 const formSchema = z
   .object({
     fName: z.string().min(3, "First name must be at least 3 characters."),
@@ -15,6 +16,11 @@ const formSchema = z
     email: z.string().email("Enter a valid email address."),
     password: z.string().min(8, "Password must be at least 8 characters."),
     confirmPassword: z.string().min(8, "Confirm password must match."),
+    role: z.enum(["user", "laundromat_admin"], {
+      errorMap: () => {
+        return { message: "Please select a valid role." };
+      },
+    }), // Added role validation
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match.",
@@ -159,6 +165,26 @@ const RegisterForm = ({ onSave, isLoading }) => {
             {errors.confirmPassword.message}
           </p>
         )}
+
+        {/* Role Field */}
+        <div>
+          <label htmlFor="role" className="block text-sm text-gray-600 mb-1">
+            Select Role
+          </label>
+          <select
+            {...register("role")}
+            id="role"
+            className={`w-full p-3 rounded-md border ${
+              errors.role ? "border-red-500" : "border-gray-300"
+            } focus:outline-none`}
+          >
+            <option value="user">User</option>
+            <option value="laundromat_admin">Laundromat Admin</option>
+          </select>
+          {errors.role && (
+            <p className="text-red-500 text-sm">{errors.role.message}</p>
+          )}
+        </div>
 
         {/* Submit Button */}
         <button

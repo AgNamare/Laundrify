@@ -7,14 +7,14 @@ const initialState = {
 };
 
 const userSlice = createSlice({
-  name: "admin",
+  name: "user",
   initialState,
   reducers: {
     setUserDetails(state, action) {
-      state.admin = action.payload; // Set admin details
+      state.user = action.payload; // Set user details
     },
     clearUserDetails(state) {
-      state.admin = null; // Clear admin details on signout
+      state.user = null; // Clear user details on signout
     },
     setLoading(state, action) {
       state.isLoading = action.payload; // Set loading state

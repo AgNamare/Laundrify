@@ -1,4 +1,4 @@
-import { createUserService } from "../services/auth.service.js";
+import { createLaundromatService, createUserService } from "../services/auth.service.js";
 import { loginUser } from "../services/auth.service.js";
 import asyncHandler from "express-async-handler";
 import { verifyUserService } from "../services/auth.service.js";
@@ -35,3 +35,13 @@ export const loginHandler = asyncHandler(async (req, res, next) => {
     res.status(401).json({ success: false, message: error.message }); // Sends { success: false, message: "Invalid email or password" }
   }
 });
+
+export const createLaundramatHandler = async (req, res, next) => {
+  try {
+    const result = await createLaundromatService(req.body);
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+

@@ -32,7 +32,9 @@ const LoginForm = ({ onSave, isLoading }) => {
 
       {/* Heading */}
       <div className="flex gap-1 flex-col">
-        <h1 className="text-3xl font-semibold text-textPrimary">Let's get Started</h1>
+        <h1 className="text-3xl font-semibold text-textPrimary">
+          Let's get Started
+        </h1>
         <h3 className="text-textSecondary text-textPrimary">
           LogIn into your account
         </h3>

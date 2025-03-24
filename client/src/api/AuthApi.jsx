@@ -102,3 +102,25 @@ export const useVerifyCode = () => {
 
   return { verifyCode, isVerifying };
 };
+
+const registerLaundromatRequest = async (laundromatData) => {
+  console.log(laundromatData);
+  const response = await axios.post("/api/v1/auth/register-landromat", laundromatData);
+  return response.data; // Assuming the response contains the newly created laundromat data
+};
+
+// Custom hook for laundromat registration
+export const useLaundromatRegistration = () => {
+  const { mutateAsync: registerLaundromat, isLoading: isRegistering } =
+    useMutation(registerLaundromatRequest, {
+      onSuccess: (data) => {
+        console.log("Laundromat registered successfully:", data);
+      },
+      onError: (error) => {
+        console.error("Error during laundromat registration:", error);
+        // Handle error, you can also dispatch to show a toast or something else
+      },
+    });
+
+  return { registerLaundromat, isRegistering };
+};

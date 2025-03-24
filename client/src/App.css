@@ -5,3 +5,16 @@
   --color-textPrimary: #20202a;
   --color-textSecondary: #8c91a3;
 }
+
+/* Add animation for input fields */
+.stacked-inputs {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* When the inputs are shown (toggled on) */
+.operating-hours-visible .stacked-inputs {
+  opacity: 1;
+  transform: translateY(0);
+}

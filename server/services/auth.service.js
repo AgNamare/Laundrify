@@ -6,6 +6,7 @@ import {
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Laundromat from "../models/laundramat.model.js";
 
 export const createUserService = async (userData) => {
   const { password, email, ...rest } = userData;
@@ -133,6 +134,7 @@ export const loginUser = async (email, password) => {
       lName: user.lName,
       phoneNumber: user.phoneNumber,
       email: user.email,
+      role: user.role,
       token,
     },
   };
@@ -140,4 +142,38 @@ export const loginUser = async (email, password) => {
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+};
+
+
+export const createLaundromatService = async (laundromatData) => {
+  // Start a session for the transaction
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    console.log("Checking if laundromat already exists");
+    const existingLaundromat = await Laundromat.findOne({ name: laundromatData.name }).session(session);
+    if (existingLaundromat) {
+      console.log("Laundromat already exists. Choose a different name.");
+      const err = new Error("Laundromat already exists. Choose a different name.");
+      err.statusCode = 409;
+      throw err;
+    }
+
+    console.log("Creating new laundromat");
+    const newLaundromat = new Laundromat({
+      ...laundromatData,
+    });
+
+    await newLaundromat.save({ session });
+    await session.commitTransaction();
+    session.endSession();
+
+    return newLaundromat;
+  } catch (error) {
+    console.log("Error creating laundromat:", error.message);
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 };
