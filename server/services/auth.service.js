@@ -6,7 +6,7 @@ import {
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import Laundromat from "../models/laundramat.model.js";
+import Laundromat from "../models/laundromat.model.js";
 
 export const createUserService = async (userData) => {
   const { password, email, ...rest } = userData;
@@ -135,6 +135,7 @@ export const loginUser = async (email, password) => {
       phoneNumber: user.phoneNumber,
       email: user.email,
       role: user.role,
+      laundromat: user.laundromat,
       token,
     },
   };
@@ -144,7 +145,6 @@ const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-
 export const createLaundromatService = async (laundromatData) => {
   // Start a session for the transaction
   const session = await mongoose.startSession();
@@ -152,10 +152,14 @@ export const createLaundromatService = async (laundromatData) => {
 
   try {
     console.log("Checking if laundromat already exists");
-    const existingLaundromat = await Laundromat.findOne({ name: laundromatData.name }).session(session);
+    const existingLaundromat = await Laundromat.findOne({
+      name: laundromatData.name,
+    }).session(session);
     if (existingLaundromat) {
       console.log("Laundromat already exists. Choose a different name.");
-      const err = new Error("Laundromat already exists. Choose a different name.");
+      const err = new Error(
+        "Laundromat already exists. Choose a different name."
+      );
       err.statusCode = 409;
       throw err;
     }
@@ -166,6 +170,25 @@ export const createLaundromatService = async (laundromatData) => {
     });
 
     await newLaundromat.save({ session });
+
+    console.log("Updating user with laundromat ID");
+    const adminUser = await User.findById(laundromatData.admin).session(
+      session
+    ); // Find the admin user
+
+    if (!adminUser) {
+      // If the admin user is not found, we should abort the transaction and throw an error
+      await session.abortTransaction();
+      session.endSession();
+      const err = new Error("Admin user not found");
+      err.statusCode = 404;
+      throw err;
+    }
+
+    adminUser.laundromat = newLaundromat._id; // Assign the new laundromat's ID to the user's laundromat field
+    await adminUser.save({ session }); // Save the updated user
+    // ----------------------------------------------------------------------
+
     await session.commitTransaction();
     session.endSession();
 

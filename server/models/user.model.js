@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Laundromat from "./laundramat.model.js"; // Import the Laundromat model
+import Laundromat from "./laundromat.model.js"; // Import the Laundromat model
 
 const userSchema = new mongoose.Schema(
   {
