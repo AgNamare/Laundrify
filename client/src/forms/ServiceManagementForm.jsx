@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Loader from "@/components/Loader";
 
 const formSchema = z.object({
@@ -11,17 +11,41 @@ const formSchema = z.object({
   prices: z.record(z.string()).optional(),
 });
 
-const ServiceManagementForm = ({ onSave, isLoading, clothesTypes }) => {
+const ServiceManagementForm = ({
+  onSave,
+  isLoading,
+  clothesTypes,
+  defaultValues,
+  action = "Add Service",
+}) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    getValues,
   } = useForm({
     resolver: zodResolver(formSchema),
+    defaultValues: defaultValues || {},
   });
 
   const [selectedClothes, setSelectedClothes] = useState({});
+
+  useEffect(() => {
+    if (defaultValues && defaultValues.prices) {
+      const selected = {};
+      defaultValues.prices.forEach((price) => {
+        selected[price.clothesType] = true;
+        setValue(`prices.${price.clothesType}`, price.customPrice);
+      });
+      setSelectedClothes(selected);
+    }
+  }, [defaultValues, setValue]);
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
 
   const handleClothesSelection = (id) => {
     setSelectedClothes((prev) => ({
@@ -31,6 +55,7 @@ const ServiceManagementForm = ({ onSave, isLoading, clothesTypes }) => {
   };
 
   const submitHandler = (data) => {
+    console.log("submitHandler")
     const pricesArray = Object.entries(data.prices || {})
       .filter(([id, price]) => selectedClothes[id] && price.trim() !== "")
       .map(([clothesType, priceValue]) => ({
@@ -46,7 +71,6 @@ const ServiceManagementForm = ({ onSave, isLoading, clothesTypes }) => {
     };
 
     onSave(serviceData);
-    reset();
   };
 
   return (
@@ -57,65 +81,40 @@ const ServiceManagementForm = ({ onSave, isLoading, clothesTypes }) => {
         {/* Service Category */}
         <div>
           <label className="block font-medium mb-1">Service Category</label>
-          <select
-            {...register("category")}
-            className="border p-3 w-full rounded-md"
-          >
+          <select {...register("category")} className="border p-3 w-full rounded-md">
             <option value="">Select Category</option>
             <option value="Wash & Fold">Wash & Fold</option>
             <option value="Dry Cleaning">Dry Cleaning</option>
             <option value="Ironing">Ironing</option>
             <option value="Stain Removal">Stain Removal</option>
           </select>
-          {errors.category && (
-            <p className="text-red-500 text-sm">{errors.category.message}</p>
-          )}
+          {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
         </div>
 
         <div>
           <label className="block font-medium mb-1">Unit</label>
-          <select
-            {...register("unit")}
-            className="border p-3 w-full rounded-md"
-          >
+          <select {...register("unit")} className="border p-3 w-full rounded-md">
             <option value="">Select Unit</option>
             <option value="Per kg">Per kg</option>
             <option value="Per item">Per item</option>
           </select>
-          {errors.unit && (
-            <p className="text-red-500 text-sm">{errors.unit.message}</p>
-          )}
+          {errors.unit && <p className="text-red-500 text-sm">{errors.unit.message}</p>}
         </div>
 
         {/* Description */}
         <div>
-          <label className="block font-medium mb-1">
-            Description (Optional)
-          </label>
-          <textarea
-            placeholder="Service description"
-            {...register("description")}
-            className="border p-3 w-full rounded-md"
-          ></textarea>
+          <label className="block font-medium mb-1">Description (Optional)</label>
+          <textarea placeholder="Service description" {...register("description")} className="border p-3 w-full rounded-md"></textarea>
         </div>
 
         {/* Clothes Pricing Selection */}
         <div>
-          <label className="block font-medium mb-2">
-            Set Pricing for Clothes
-          </label>
+          <label className="block font-medium mb-2">Set Pricing for Clothes</label>
           {clothesTypes && clothesTypes.length > 0 ? (
             <div className="border rounded-lg p-4 max-h-60 overflow-y-auto">
               {clothesTypes.map((type) => (
-                <div
-                  key={type._id}
-                  className="flex items-center gap-4 border-b py-3"
-                >
-                  <img
-                    src={type.imageUrl || "/placeholder-image.jpg"}
-                    alt={type.name}
-                    className="w-14 h-14 object-cover rounded-md"
-                  />
+                <div key={type._id} className="flex items-center gap-4 border-b py-3">
+                  <img src={type.imageUrl || "/placeholder-image.jpg"} alt={type.name} className="w-14 h-14 object-cover rounded-md" />
                   <span className="font-medium">{type.name}</span>
                   <input
                     type="checkbox"
@@ -146,7 +145,7 @@ const ServiceManagementForm = ({ onSave, isLoading, clothesTypes }) => {
           disabled={isLoading}
           className="w-full bg-primary text-white font-semibold py-3 rounded-full transition hover:opacity-90"
         >
-          {isLoading ? <Loader /> : "Add Service"}
+          {isLoading ? <Loader /> : action}
         </button>
       </form>
     </div>

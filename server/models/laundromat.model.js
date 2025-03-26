@@ -5,7 +5,6 @@ const serviceSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    // Examples: "Wash & Fold", "Dry Cleaning", "Ironing", "Stain Removal"
   },
   prices: [ // Array of pricing for different clothes types
     {

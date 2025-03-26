@@ -25,3 +25,5 @@ export const useGetClothesTypes = () => {
 
   return { clothesTypes, isLoading, isError, error };
 };
+
+

@@ -67,3 +67,55 @@ export const getLaundromatService = async (laundromatId) => {
 
   return laundromat;
 };
+
+export const getServiceByCategory = async (laundromatId, category) => {
+  try {
+    const laundromat = await Laundromat.findById(laundromatId);
+
+    if (!laundromat) {
+      throw new Error("Laundromat not found");
+    }
+
+    const service = laundromat.services.find(
+      (service) => service.category === category
+    );
+
+    if (!service) {
+      throw new Error("Service not found for the given category");
+    }
+
+    return service;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateServiceByCategory = async (laundromatId, category, serviceData) => {
+  try {
+    const laundromat = await Laundromat.findById(laundromatId);
+
+    if (!laundromat) {
+      throw new Error("Laundromat not found");
+    }
+
+    const serviceIndex = laundromat.services.findIndex(service => service.category === category);
+
+    if (serviceIndex === -1) {
+      throw new Error("Service not found for the given category");
+    }
+
+    // Update the service
+    laundromat.services[serviceIndex].category = serviceData.category;
+    laundromat.services[serviceIndex].unit = serviceData.unit;
+    laundromat.services[serviceIndex].description = serviceData.description;
+
+    //Update the prices array
+    laundromat.services[serviceIndex].prices = serviceData.prices;
+
+    await laundromat.save();
+
+    return laundromat.services[serviceIndex]; // Return the updated service
+  } catch (error) {
+    throw error;
+  }
+};
