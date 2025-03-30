@@ -1,5 +1,5 @@
 import Laundromat from "../models/laundromat.model.js";
-import ClothesType from "../models/clothesType.model.js"
+import ClothesType from "../models/clothesType.model.js";
 
 export const addServiceToLaundromatService = async (serviceData) => {
   const { laundromatId, category, prices, unit, description } = serviceData;
@@ -52,7 +52,6 @@ export const addServiceToLaundromatService = async (serviceData) => {
   return laundromat;
 };
 
-
 export const getLaundromatService = async (laundromatId) => {
   // 1. Find the laundromat by ID
   const laundromat = await Laundromat.findById(laundromatId).populate({
@@ -90,19 +89,28 @@ export const getServiceByCategory = async (laundromatId, category) => {
   }
 };
 
-export const updateServiceByCategory = async (laundromatId, category, serviceData) => {
+export const updateServiceByCategory = async (
+  laundromatId,
+  category,
+  serviceData
+) => {
   try {
-    const laundromat = await Laundromat.findById(laundromatId);
+    const laundromat = await Laundromat.findById(laundromatId)
 
     if (!laundromat) {
       throw new Error("Laundromat not found");
     }
 
-    const serviceIndex = laundromat.services.findIndex(service => service.category === category);
+    const serviceIndex = laundromat.services.findIndex(
+      (service) => service.category === category
+    );
+    console.log(serviceIndex);
 
     if (serviceIndex === -1) {
       throw new Error("Service not found for the given category");
     }
+
+    console.log(laundromat.services[serviceIndex].category)
 
     // Update the service
     laundromat.services[serviceIndex].category = serviceData.category;
@@ -118,4 +126,16 @@ export const updateServiceByCategory = async (laundromatId, category, serviceDat
   } catch (error) {
     throw error;
   }
+};
+
+export const getAllServicesForLaundromatService = async (laundromatId) => {
+  const laundromat = await Laundromat.findById(laundromatId).populate(
+    "services.prices.clothesType"
+  );
+
+  if (!laundromat) {
+    throw new Error("Laundromat not found");
+  }
+
+  return laundromat.services;
 };

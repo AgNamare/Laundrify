@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useGetServiceByCategory } from "../api/laundromatApi"; // Assuming this is where useGetServiceByCategory is
 import { useUpdateServiceByCategory } from "../api/laundromatApi"; // Assuming this is where useUpdateServiceByCategory is
 import { useGetClothesTypes } from "../api/clothesTypeApi";
 import ServiceManagementForm from "../forms/ServiceManagementForm";
+import { Plus } from "lucide-react";
 
 const UpdateServicePage = () => {
   const { laundromatId, category } = useParams();
@@ -33,7 +34,7 @@ const UpdateServicePage = () => {
     : {};
 
   const handleUpdateSubmit = async (data) => {
-    console.log(laundromatId, category, serviceData);
+    console.log(laundromatId, category, data);
     try {
       await updateServiceByCategory({
         laundromatId,
@@ -51,8 +52,17 @@ const UpdateServicePage = () => {
 
   return (
     <div>
-      <div className="p-2 m-2 border rounded-md">
-        <h1 className="text-lg font-medium">Update Service</h1>
+      <div className="p-2 my-2 border flex justify-between border-slate-200 rounded-md">
+        <h1 className="text-lg font-medium ">Service Management</h1>
+        <div className="hover:cursor-pointer">
+          <Link
+            to={`/laundromat/{laundromatId}/services/add`}
+            className=" flex gap-1 justify-center items-center bg-primary text-white px-2 py-1 rounded-full"
+          >
+            <button>Add New Service</button>
+            <Plus size={20} />
+          </Link>
+        </div>
       </div>
       {serviceData && (
         <ServiceManagementForm

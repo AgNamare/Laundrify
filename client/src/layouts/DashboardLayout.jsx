@@ -1,29 +1,77 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Home, Package } from "lucide-react";
+import logo from "../assets/images/logo.png";
 
 const DashboardLayout = () => {
+  const location = useLocation();
   const user = useSelector((state) => state.user?.user?.user);
   const laundromatId = user?.laundromat;
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-64 bg-primary text-white p-4 min-h-screen">
-        <h2 className="text-xl font-bold mb-4">Dashboard</h2>
-        <ul>
-          <li className="mb-2">
-            <Link to="/laundromat/dashboard" className="hover:underline">Home</Link>
-          </li>
-          <li className="mb-2">
-            <Link to={`/laundromat/${laundromatId}/services`} className="hover:underline">
-              Services
-            </Link>
-          </li>
-        </ul>
+      {/* Fixed Sidebar */}
+      <aside className="w-56 bg-gray-900 text-slate-400 p-4 min-h-screen fixed flex flex-col justify-between">
+        <div>
+          <img src={logo} alt="Laundrify Logo" className="w-40 mb-4" />
+
+          <ul className="mt-8">
+            <h3 className="text-white mb-6 font-semibold mx-2">MENU</h3>
+
+            <li className="mb-6">
+              <Link
+                to="/laundromat/dashboard"
+                className={`flex items-center gap-2 px-3 py-1 ${
+                  location.pathname === "/laundromat/dashboard"
+                    ? "text-white border-l-4 border-primary"
+                    : "text-slate-400"
+                }`}
+              >
+                <Home
+                  size={20}
+                  className={
+                    location.pathname === "/laundromat/dashboard"
+                      ? "text-primary"
+                      : "text-slate-400"
+                  }
+                />
+                Home
+              </Link>
+            </li>
+
+            <li className="mb-6">
+              <Link
+                to={`/laundromat/${laundromatId}/services`}
+                className={`flex items-center gap-2 px-3 py-1 ${
+                  location.pathname === `/laundromat/${laundromatId}/services`
+                    ? "text-white border-l-4 border-primary"
+                    : "text-slate-400"
+                }`}
+              >
+                <Package
+                  size={20}
+                  className={
+                    location.pathname === `/laundromat/${laundromatId}/services`
+                      ? "text-primary"
+                      : "text-slate-400"
+                  }
+                />
+                Services
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* User Greeting at Bottom */}
+        <div className=" text-white mt-auto p-4">
+          <p className="text-sm">
+            <span className="">{user?.fName } {user?.lName}</span>
+          </p>
+        </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-4">
+      {/* Main Content with Scroll */}
+      <main className="flex-1 p-4 ml-56 overflow-y-auto">
         <Outlet />
       </main>
     </div>

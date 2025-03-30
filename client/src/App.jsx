@@ -7,6 +7,7 @@ import LaundromatHomepage from "./pages/LaundromatHomepage.jsx";
 import ServiceManagementPage from "./pages/ServiceManagementPage.jsx";
 import DashboardLayout from "./layouts/DashboardLayout.jsx";
 import UpdateServicePage from "./pages/UpdateServicePage.jsx";
+import AddNewServicePage from "./pages/AddNewServicePage.jsx";
 
 function AppRoutes() {
   return (
@@ -14,12 +15,13 @@ function AppRoutes() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/verify" element={<VerifyCodePage />} />
-      <Route path="/register-laundramat" element={<LaundramatRegister />} />
+      <Route path="/register-laundromat" element={<LaundramatRegister />} />
 
       {/* Dashboard Layout */}
       <Route path="/laundromat" element={<DashboardLayout />}>
         <Route path="/laundromat/dashboard" element={<LaundromatHomepage />} />
         <Route path="/laundromat/:laundromatId/services" element={<ServiceManagementPage />} />
+        <Route path="/laundromat/:laundromatId/services/add" element={<AddNewServicePage />} />
         <Route path="/laundromat/:laundromatId/services/:category" element={<UpdateServicePage />} />
       </Route>
     </Routes>

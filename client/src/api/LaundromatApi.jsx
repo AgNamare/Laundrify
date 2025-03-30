@@ -113,3 +113,28 @@ export const useGetServiceByCategory = (laundromatId, category) => {
 
   return { service, isLoadingService, refetch };
 };
+
+const getServicesRequest = async (laundromatId) => {
+  try {
+    const response = await axios.get(`/api/v1/laundromats/${laundromatId}/services`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch services");
+  }
+};
+
+export const useGetServices = (laundromatId) => {
+  const { data: services, isLoading, isError, error } = useQuery(
+    ["services", laundromatId],
+    () => getServicesRequest(laundromatId),
+    {
+      onError: (error) => {
+        toast.error(error.message);
+      },
+      enabled: !!laundromatId,
+    }
+  );
+
+  return { services, isLoading, isError, error };
+};
