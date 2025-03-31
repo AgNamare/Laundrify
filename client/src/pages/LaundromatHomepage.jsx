@@ -162,11 +162,18 @@ const LaundromatHomepage = () => {
       )}
     </div>
 
-    <div className="bg-blue-200 p-5 rounded-lg mb-6">
-      <h3 className="text-lg font-semibold text-blue-900">
-        Your clothes will finish in 1 Day
-      </h3>
-      <button className="text-primary mt-2 underline font-medium">View Details</button>
+    <div className="bg-blue-200 p-5 rounded-lg mb-6 flex items-center justify-between">
+      <div>
+        <h3 className="text-lg font-semibold text-blue-900">
+          Your clothes will finish in 1 Day
+        </h3>
+        <button className="text-primary mt-2 underline font-medium">View Details</button>
+      </div>
+      <img 
+        src="https://cdn-icons-png.flaticon.com/512/1048/1048953.png" 
+        alt="Laundry"
+        className="w-16 h-16 object-cover opacity-80" 
+      />
     </div>
 
     <div className="flex items-center justify-between mb-4">
@@ -218,6 +225,9 @@ const LaundromatHomepage = () => {
       )}
     </div>
   </div>
+
+
+
 
 
 );
