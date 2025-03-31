@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import { createOrderService, getOrdersService, getOrderService, updateOrderService, deleteOrderService } from "../services/order.service.js";
 
 export const createOrderHandler = asyncHandler(async (req, res) => {
+  console.log(req.body)
   const order = await createOrderService(req.body);
   res.status(201).json(order);
 });

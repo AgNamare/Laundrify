@@ -192,7 +192,7 @@ const LaundromatHomepage = () => {
                 className="bg-white rounded-lg shadow flex p-4 items-center"
               >
                 <img
-                  src={item.imageUrl || "https://via.placeholder.com/80"}
+                  src={item.imageUrl || "https://cdn.thewirecutter.com/wp-content/media/2022/05/washing-machine-2048px-8670.jpg?auto=webp&quality=75&crop=3:2&width=1024"}
                   alt={item.name}
                   className="w-16 h-16 object-cover rounded"
                 />

@@ -64,6 +64,7 @@ export const getLaundromatService = async (laundromatId) => {
     throw new Error("Laundromat not found"); // Or create a custom error
   }
 
+  console.log(laundromat)
   return laundromat;
 };
 

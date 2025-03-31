@@ -4,6 +4,7 @@ import app from "./app.js";
 import authRoutes from "./routes/auth.route.js";
 import laundromatRoutes from "./routes/laundromat.route.js";
 import clothesRoutes from "./routes/clothesType.route.js";
+import orderRoutes from "./routes/order.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
 
 // Load environment variables
@@ -19,6 +20,7 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/laundromats", laundromatRoutes);
 app.use("/api/v1/clothes-types", clothesRoutes);
 

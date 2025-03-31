@@ -38,14 +38,16 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["M-Pesa", "Credit Card", "Cash"],
-      required: true,
+      enum: ["M-Pesa", "Credit Card"]
     },
     delivery: {
       pickupLocation: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Laundromat",
-        required: true,
+        type: {
+          type: String,
+          enum: ["Point"],
+          default: "Point",
+        },
+        coordinates: { type: [Number] },
       },
       deliveryLocation: {
         type: {
@@ -53,7 +55,7 @@ const orderSchema = new mongoose.Schema(
           enum: ["Point"],
           default: "Point",
         },
-        coordinates: { type: [Number], required: true },
+        coordinates: { type: [Number]},
       },
       deliveryStatus: {
         type: String,

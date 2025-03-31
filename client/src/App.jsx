@@ -21,7 +21,7 @@ function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/verify" element={<VerifyCodePage />} />
       <Route path="/register-laundromat" element={<LaundramatRegister />} />
-      <Route path="/laundry/:id/order" element={<LaundryOrderPage />} />
+      <Route path="/laundry/:laundromatId/" element={<LaundryOrderPage />} />
 
       {/* Dashboard Layout */}
       <Route path="/laundromat" element={<DashboardLayout />}>
