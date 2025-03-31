@@ -46,3 +46,4 @@ coverage/
 
 # pm2 logs
 pmdump.*
+.qodo
