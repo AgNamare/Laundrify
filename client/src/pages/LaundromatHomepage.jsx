@@ -11,13 +11,16 @@ import {
 } from "../api/laundromatApi";
 
 const LaundromatHomepage = () => {
-  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; //import.meta.env.VITE_GOOGLE_MAPS_API_KEY
   const navigate = useNavigate();
   const user = useSelector((state) => state.user?.user?.user);
 
   const laundromatId = user?.laundromat;
+  console.log("Laundromat id: ", laundromatId)
   const { laundromat, isLoading, isError, error } =
     useGetLaundromatDetails(laundromatId);
+
+  console.log(laundromat)
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -118,104 +121,106 @@ const LaundromatHomepage = () => {
     );
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 p-4">
-      <div className="flex items-center mb-4 justify-between ">
-        <div className="">
-          <p className="text-sm text-gray-500">Current Location</p>
-          <h2 className="text-medium font-semibold flex gap-1 items-center">
-            <span><MapPin className="text-primary" size={16}/></span>{location || "Fetching location..."}
-          </h2>
-        </div>
-        <Bell className="text-textPrimary p-2 rounded-lg border border-textSecondary"  size={42} />
+    <div className="flex flex-col h-screen w-full bg-white px-6 py-4">
+    <div className="flex items-center justify-between mb-6">
+      <div>
+        <p className="text-sm text-gray-400">Current Location</p>
+        <h2 className="text-lg font-semibold flex gap-1 items-center text-gray-900">
+          <span><MapPin className="text-primary" size={16}/></span>{location || "Fetching location..."}
+        </h2>
       </div>
+      <Bell className="text-gray-600 p-2 rounded-lg border border-gray-300" size={36} />
+    </div>
 
-      <div className="mb-4 relative">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          placeholder="Find the nearest laundromat"
-          className="w-full p-2 rounded border  focus:border-primary"
-        />
-        {showSearchResults && (
-          <div className="absolute w-full bg-white shadow-lg rounded mt-1 max-h-60 overflow-auto z-50">
-            {searchResults.length > 0 ? (
-              searchResults.map((item) => (
-                <div
-                  key={item._id}
-                  className="p-2 border-b hover:bg-gray-200 cursor-pointer"
-                  onClick={() => {
-                    navigate(`/laundromat/${item._id}`);
-                    setShowSearchResults(false);
-                  }}
-                >
-                  {item.name}
-                </div>
-              ))
-            ) : (
-              <div className="p-2 text-gray-500">No results found</div>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="bg-blue-50 p-4 rounded-lg mb-4">
-        <h3 className="text-lg font-semibold text-blue-900">
-          Your clothes will finish in 1 Day
-        </h3>
-        <button className="text-primary mt-2 underline">View Details</button>
-      </div>
-
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold">Nearest laundry</h3>
-        <Link to="#" className="text-primary underline text-sm">
-          See More
-        </Link>
-      </div>
-
-      <div className="space-y-4">
-        {isLoadingLaundromats ? (
-          <p>Loading nearby laundromats...</p>
-        ) : (
-          nearbyLaundromats.map((item) => {
-            const distance = userCoords
-              ? calculateDistance(
-                  userCoords.latitude,
-                  userCoords.longitude,
-                  item.location.coordinates[1],
-                  item.location.coordinates[0]
-                ) + " km"
-              : "Unknown distance";
-            return (
+    <div className="relative mb-6">
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={handleSearchChange}
+        placeholder="Find the nearest laundromat"
+        className="w-full p-3 rounded-lg border border-gray-300 focus:border-primary shadow-sm"
+      />
+      {showSearchResults && (
+        <div className="absolute w-full bg-white shadow-md rounded-lg mt-2 max-h-60 overflow-auto z-50">
+          {searchResults.length > 0 ? (
+            searchResults.map((item) => (
               <div
                 key={item._id}
-                className="bg-white rounded-lg shadow flex p-4 items-center"
+                className="p-3 border-b hover:bg-gray-100 cursor-pointer"
+                onClick={() => {
+                  navigate(`/laundromat/${item._id}`);
+                  setShowSearchResults(false);
+                }}
               >
-                <img
-                  src={item.imageUrl || "https://cdn.thewirecutter.com/wp-content/media/2022/05/washing-machine-2048px-8670.jpg?auto=webp&quality=75&crop=3:2&width=1024"}
-                  alt={item.name}
-                  className="w-16 h-16 object-cover rounded"
-                />
-                <div className="ml-4">
-                  <h4 className="font-semibold text-gray-800">{item.name}</h4>
-                  <div className="flex items-center gap-1 text-sm text-gray-500">
-                    <MapPin size={16} className="text-primary" />
-                    <span>{distance}</span>
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {item.price || "Unknown price"}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    Rating: {item.rating || "N/A"}
-                  </div>
+                {item.name}
+              </div>
+            ))
+          ) : (
+            <div className="p-3 text-gray-500">No results found</div>
+          )}
+        </div>
+      )}
+    </div>
+
+    <div className="bg-blue-200 p-5 rounded-lg mb-6">
+      <h3 className="text-lg font-semibold text-blue-900">
+        Your clothes will finish in 1 Day
+      </h3>
+      <button className="text-primary mt-2 underline font-medium">View Details</button>
+    </div>
+
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="text-lg font-semibold text-gray-900">Nearest laundry</h3>
+      <Link to="#" className="text-primary underline text-sm font-medium">
+        See More
+      </Link>
+    </div>
+
+    <div className="space-y-5 flex-grow overflow-auto">
+      {isLoadingLaundromats ? (
+        <p className="text-gray-500">Loading nearby laundromats...</p>
+      ) : (
+        nearbyLaundromats.map((item) => {
+          const distance = userCoords
+            ? calculateDistance(
+                userCoords.latitude,
+                userCoords.longitude,
+                item.location.coordinates[1],
+                item.location.coordinates[0]
+              ) + " km"
+            : "Unknown distance";
+          return (
+            <div
+              key={item._id}
+              className="bg-white rounded-lg shadow-md flex p-4 items-center border border-gray-200"
+            >
+              <img
+                src={item.imageUrl || "https://cdn.thewirecutter.com/wp-content/media/2022/05/washing-machine-2048px-8670.jpg?auto=webp&quality=75&crop=3:2&width=1024"}
+                alt={item.name}
+                className="w-20 h-20 object-cover rounded-lg border border-gray-300"
+              />
+              <div className="ml-5">
+                <h4 className="font-semibold text-gray-900">{item.name}</h4>
+                <div className="flex items-center gap-1 text-sm text-gray-600">
+                  <MapPin size={16} className="text-primary" />
+                  <span>{distance}</span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  {item.price || "Unknown price"}
+                </div>
+                <div className="text-sm text-gray-600">
+                  Rating: {item.rating || "N/A"}
                 </div>
               </div>
-            );
-          })
-        )}
-      </div>
+            </div>
+          );
+        })
+      )}
     </div>
-  );
+  </div>
+
+
+);
 };
 
 export default LaundromatHomepage;

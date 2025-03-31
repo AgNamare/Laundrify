@@ -6,6 +6,7 @@ import { toast } from "sonner";
 const getLaundromatDetailsRequest = async (laundromatId) => {
   try {
     const response = await axios.get(`/api/v1/laundromats/${laundromatId}`); // Adjust the API endpoint as needed
+    console.log("Response data:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching laundromat details:", error);
