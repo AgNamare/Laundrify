@@ -225,11 +225,6 @@ const LaundromatHomepage = () => {
       )}
     </div>
   </div>
-
-
-
-
-
 );
 };
 
