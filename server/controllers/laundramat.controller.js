@@ -4,6 +4,8 @@ import {
   getServiceByCategory,
   addServiceToLaundromatService,
   updateServiceByCategory,
+  getLaundromatsService,
+  searchLaundromatService
 } from "../services/laundromat.service.js"; // Adjust path as needed
 
 export const addServiceHandler = async (req, res, next) => {
@@ -71,3 +73,33 @@ export const getAllServicesHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getLaundromatsHandler = async (req, res, next) => {
+  try {
+    const { limit } = req.query;
+    const laundromats = await getLaundromatsService(limit); // Assuming you have this service function
+    res.status(200).json(laundromats);
+  } catch (error) {
+    next(error);
+    console.error(error);
+  }
+};
+
+export const searchLaundromatHandler = async (req, res, next) => {
+  try {
+    const { query } = req.query;
+
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    const laundromats = await searchLaundromatService(query); // Assuming this service exists
+
+    res.status(200).json(laundromats);
+  } catch (error) {
+    next(error);
+    console.error(error);
+  }
+};
+
+

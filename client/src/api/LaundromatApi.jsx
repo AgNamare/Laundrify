@@ -138,3 +138,49 @@ export const useGetServices = (laundromatId) => {
 
   return { services, isLoading, isError, error };
 };
+const searchLaundromatsRequest = async (query) => {
+  const encodedQuery = encodeURIComponent(query);
+  const response = await axios.get(`/api/v1/laundromats/search?query=${encodedQuery}`);
+  return response.data;
+};
+
+export const useSearchLaundromats = () => {
+  const { mutateAsync: searchLaundromats, isLoading: isSearchingLaundromats } = useMutation(
+    searchLaundromatsRequest,
+    {
+      onSuccess: (data) => {
+        if (data.length === 0) {
+          toast.info("No laundromats found.");
+        } else {
+          toast.success("Laundromats found!");
+        }
+      },
+      onError: (error) => {
+        const errorMessage = error.response?.data?.message || "An error occurred";
+        toast.error(errorMessage);
+      },
+    }
+  );
+
+  return { searchLaundromats, isSearchingLaundromats };
+};
+
+const getLaundromatsRequest = async () => {
+  const response = await axios.get("/api/v1/laundromats?limit=5");
+  return response.data;
+};
+
+export const useGetLaundromats = () => {
+  const { data: laundromats, isLoading, isError, error } = useQuery(
+    ["laundromats"],
+    getLaundromatsRequest,
+    {
+      onError: (error) => {
+        const errorMessage = error.response?.data?.message || "Failed to load laundromats";
+        toast.error(errorMessage);
+      },
+    }
+  );
+
+  return { laundromats, isLoading, isError, error };
+};

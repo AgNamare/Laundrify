@@ -139,3 +139,32 @@ export const getAllServicesForLaundromatService = async (laundromatId) => {
 
   return laundromat.services;
 };
+
+export const getLaundromatsService = async (limit) => {
+  try {
+    let laundromats
+    if (!limit) {
+      laundromats = await Laundromat.find(); 
+    }
+    else {
+      laundromats = await Laundromat.find().limit(limit); 
+    }
+    return laundromats;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const searchLaundromatService = async (query) => {
+  try {
+    const laundromats = await Laundromat.find({
+      name: { $regex: query, $options: "i" }, // Case-insensitive search
+    }).limit(5); // Limit results to 5 laundromats
+
+    return laundromats;
+  } catch (error) {
+    throw new Error("Error searching for laundromats: " + error.message);
+  }
+};
+
+

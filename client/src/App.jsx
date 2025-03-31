@@ -17,6 +17,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/" element={<LaundromatHomepage />} />
+      <Route path="/l" element={<LaundryOrderPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/verify" element={<VerifyCodePage />} />
       <Route path="/register-laundromat" element={<LaundramatRegister />} />
