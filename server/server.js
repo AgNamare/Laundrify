@@ -6,6 +6,7 @@ import laundromatRoutes from "./routes/laundromat.route.js";
 import clothesRoutes from "./routes/clothesType.route.js";
 import orderRoutes from "./routes/order.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
+import reviewRoutes from "./routes/review.routes.js";
 
 // Load environment variables
 dotenv.config();
@@ -23,6 +24,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/laundromats", laundromatRoutes);
 app.use("/api/v1/clothes-types", clothesRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
 
 app.use(errorHandler)
 
