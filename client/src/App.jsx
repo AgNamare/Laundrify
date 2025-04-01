@@ -11,6 +11,7 @@ import LaundryOrderPage from "./pages/LaundryOrderPage.jsx";
 import AddNewServicePage from "./pages/AddNewServicePage.jsx";
 import OrderDetails from "./pages/OrderDetailsPage.jsx";
 import OrderStatusTimeline from "./components/OrderStatusTimeline.jsx";
+import Homepage from "./pages/Homepage.jsx";
 
 function AppRoutes() {
   return (
@@ -25,7 +26,7 @@ function AppRoutes() {
 
       {/* Dashboard Layout */}
       <Route path="/laundromat" element={<DashboardLayout />}>
-        <Route path="/laundromat/dashboard" element={<LaundromatHomepage />} />
+        <Route path="/laundromat/dashboard" element={<Homepage />} />
         <Route
           path="/laundromat/:laundromatId/services"
           element={<ServiceManagementPage />}

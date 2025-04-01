@@ -117,11 +117,11 @@ const LaundryOrderPage = () => {
 
         {/* Laundry Info */}
         <div className="mb-6">
-          <div className="flex items-center justify-between px-1 mb-4">
+          <div className="flex items-center gap-1 justify-between px-1 mb-4">
             <p className="text-gray-600 flex items-center gap-1 text-sm border border-gray-300 px-2 py-1 rounded-lg">
-              <MapPin size={16} className="text-blue-500" /> {laundromat?.address}
+              <MapPin size={16} className="text-blue-500" /> <span className="text-xs">{laundromat?.address}</span>
             </p>
-            <p className="text-gray-600 border border-gray-300 text-sm px-2 py-1 rounded-lg">
+            <p className="text-gray-600 border border-gray-300 text-xs px-2 py-1 rounded-lg">
               ⭐ {laundromat?.rating || "N/A"} (Reviews)
             </p>
           </div>
@@ -153,11 +153,11 @@ const LaundryOrderPage = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <button onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 border rounded-full">
+                  <button onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 border rounded-full flex justify-center items-center">
                     <Minus size={16} />
                   </button>
                   <span className="w-4 text-center">{item.quantity}</span>
-                  <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 border rounded-full">
+                  <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 border rounded-full flex justify-center items-center">
                     <Plus size={16} />
                   </button>
                 </div>

@@ -152,9 +152,7 @@ export const useSearchLaundromats = () => {
       onSuccess: (data) => {
         if (data.length === 0) {
           toast.info("No laundromats found.");
-        } else {
-          toast.success("Laundromats found!");
-        }
+        } 
       },
       onError: (error) => {
         const errorMessage = error.response?.data?.message || "An error occurred";

@@ -1,5 +1,8 @@
 import express from "express";
-import { addReview, getLaundromatReviews } from "./controllers/review.controller.js";
+import {
+  addReview,
+  getLaundromatReviews,
+} from "../controllers/review.controller.js";
 
 const router = express.Router();
 

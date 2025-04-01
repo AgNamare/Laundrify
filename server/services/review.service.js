@@ -1,4 +1,4 @@
-import Review from "./models/review.model.js";
+import Review from "../models/review.model.js";
 
 /**
  * Create a new review

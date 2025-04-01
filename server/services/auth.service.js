@@ -136,8 +136,8 @@ export const loginUser = async (email, password) => {
       email: user.email,
       role: user.role,
       laundromat: user.laundromat,
-      token,
     },
+    token,
   };
 };
 
