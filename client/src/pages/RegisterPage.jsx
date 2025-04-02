@@ -4,7 +4,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import RegisterForm from "../forms/RegisterForm";
-import { useRegister } from "../api/authApi";
+import { useRegister } from "../api/AuthApi";
 
 const RegisterPage = () => {
   const { register, isRegistering } = useRegister();
