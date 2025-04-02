@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
-import { useVerifyCode } from "../api/authApi";
+import { useVerifyCode } from "../api/AuthApi";
 
 const VerifyCodePage = () => {
   const [code, setCode] = useState(["", "", "", ""]);

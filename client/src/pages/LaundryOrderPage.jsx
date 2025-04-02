@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft, MoreVertical, Minus, Plus, MapPin } from "lucide-react";
 import { setOrderDetails } from "../redux/orderSlice";
-import { useGetLaundromatDetails } from "../api/laundromatApi";
+import { useGetLaundromatDetails } from "../api/LaundromatApi";
 import { usePlaceOrder } from "../api/OrderApi"; // Custom hook defined in orderApi.js
 
 const LaundryOrderPage = () => {

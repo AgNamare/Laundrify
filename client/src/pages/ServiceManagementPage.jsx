@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useGetServices } from "../api/laundromatApi";
+import { useGetServices } from "../api/LaundromatApi";
 import WashAndFoldImage from "../assets/illustrations/washAndFold.png"; // Import the image
 import { Plus } from "lucide-react";
 
