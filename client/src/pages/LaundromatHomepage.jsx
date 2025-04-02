@@ -15,8 +15,6 @@ const LaundromatHomepage = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user?.user?.user);
 
-
-
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const { searchLaundromats, isSearchingLaundromats } = useSearchLaundromats();
@@ -96,19 +94,6 @@ const LaundromatHomepage = () => {
     }
   };
 
-  if (isLoading)
-    return (
-      <div className="flex sm:min-h-screen items-center justify-center">
-        Loading...
-      </div>
-    );
-  if (isError)
-    return (
-      <div className="flex sm:min-h-screen items-center justify-center">
-        Error: {error?.message}
-      </div>
-    );
-
   return (
     <div className="flex flex-col h-screen w-full bg-white px-5 py-6">
       <div className="flex items-center justify-between mb-6">
@@ -175,7 +160,10 @@ const LaundromatHomepage = () => {
 
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">Nearest laundry</h3>
-        <Link to="#" className="text-primary text-medium font-large font-semibold">
+        <Link
+          to="#"
+          className="text-primary text-medium font-large font-semibold"
+        >
           See More
         </Link>
       </div>
