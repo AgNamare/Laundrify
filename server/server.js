@@ -17,7 +17,7 @@ const MONGO_URI = process.env.MONGO_URI; // process.env.MONGO_URI
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: ["http://localhost:5173", "https://app-laundrify.onrender.com/"], // Allow all origins (change this in production)
+  origin: ["http://localhost:5173", "https://app-laundrify.onrender.com"], // Allow all origins (change this in production)
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
