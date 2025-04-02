@@ -8,7 +8,7 @@ import {
   useGetLaundromatDetails,
   useSearchLaundromats,
   useGetLaundromats,
-} from "../api/laundromatApi";
+} from "../api/LaundromatApi";
 
 const LaundromatHomepage = () => {
   const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; //import.meta.env.VITE_GOOGLE_MAPS_API_KEY
