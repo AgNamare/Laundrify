@@ -15,12 +15,7 @@ const LaundromatHomepage = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user?.user?.user);
 
-  const laundromatId = user?.laundromat;
-  console.log("Laundromat id: ", laundromatId);
-  const { laundromat, isLoading, isError, error } =
-    useGetLaundromatDetails(laundromatId);
 
-  console.log(laundromat);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -111,12 +106,6 @@ const LaundromatHomepage = () => {
     return (
       <div className="flex sm:min-h-screen items-center justify-center">
         Error: {error?.message}
-      </div>
-    );
-  if (!laundromat)
-    return (
-      <div className="flex sm:min-h-screen items-center justify-center">
-        No laundromat found.
       </div>
     );
 
