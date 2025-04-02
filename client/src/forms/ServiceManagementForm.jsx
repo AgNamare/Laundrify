@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "../../node_modules/react-hook-form/dist";
 import { z } from "zod";
 import { useState, useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
 import Loader from "@/components/Loader";
 
 // Form validation schema
