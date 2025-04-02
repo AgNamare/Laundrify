@@ -1,0 +1,30 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches:
+      - development  # Change to the branch you want to deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Deploy Backend to Render
+        run: |
+          curl -X POST "https://api.render.com/v1/services/srv-cvlqsl3e5dus73apn2i0/deploys" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          -H "Accept: application/json" \
+          -H "Content-Type: application/json" \
+          --data '{}'
+          
+      - name: Deploy Frontend to Render
+        run: |
+          curl -X POST "https://api.render.com/v1/services/srv-cvmksj7diees73c1e2m0/deploys" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          -H "Accept: application/json" \
+          -H "Content-Type: application/json" \
+          --data '{}'
