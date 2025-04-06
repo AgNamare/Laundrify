@@ -23,6 +23,9 @@ function AppRoutes() {
       <Route path="/verify" element={<VerifyCodePage />} />
       <Route path="/register-laundromat" element={<LaundramatRegister />} />
       <Route path="/laundry/:laundromatId/" element={<LaundryOrderPage />} />
+      {/* MARK ADDED THIS SO EDIT ROUTE APPROPRIATELY */}
+      <Route path="/laundry" element={<OrderDetails />} /> 
+      
 
       {/* Dashboard Layout */}
       <Route path="/laundromat" element={<DashboardLayout />}>
