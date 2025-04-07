@@ -23,7 +23,7 @@ const OrderStatusTimeline = ({ status }) => {
   return (
     <div className="flex justify-between items-center px-4">
       {stages.map((stage, index) => (
-        <div key={stage.id} className="flex flex-col items-center relative">
+        <div key={stage.id} className="flex flex-row gap-2 justify-center items-center relative">
           {/* Connector Line */}
           {index < stages.length - 1 && (
             <div 
@@ -55,8 +55,8 @@ const OrderStatusTimeline = ({ status }) => {
           </div>
           
           {/* Label */}
-          <span className={`text-xs mt-2 ${
-            isCurrentStage(index) ? 'text-primary font-medium' : 'text-gray-500'
+          <span className={`text-xs  ${
+            isCurrentStage(index) ? 'text-primary font-medium' : 'text-black font-medium'
           }`}>
             {stage.label}
           </span>

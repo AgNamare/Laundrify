@@ -28,6 +28,9 @@ function AppRoutes() {
         <Route path="/app/c" element={<CheckoutPage />} />
         <Route path="/app/laundry/:laundromatId/" element={<LaundryOrderPage />} />
       </Route>
+      {/* MARK ADDED THIS SO EDIT ROUTE APPROPRIATELY */}
+      <Route path="/laundry" element={<OrderDetails />} /> 
+      
 
       {/* Dashboard Layout */}
       <Route path="/laundromat" element={<DashboardLayout />}>
