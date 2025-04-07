@@ -23,12 +23,12 @@ const OrderStatusTimeline = ({ status }) => {
   return (
     <div className="flex justify-between items-center px-4">
       {stages.map((stage, index) => (
-        <div key={stage.id} className="flex flex-col items-center relative">
+        <div key={stage.id} className="flex flex-row gap-2 justify-center items-center relative">
           {/* Connector Line */}
           {index < stages.length - 1 && (
             <div 
               className={`absolute w-full h-0.5 top-3 left-1/2 -z-10 ${
-                isStageCompleted(index) ? 'bg-blue-500' : 'bg-gray-200'
+                isStageCompleted(index) ? 'bg-primary' : 'bg-gray-200'
               }`}
             />
           )}
@@ -37,9 +37,9 @@ const OrderStatusTimeline = ({ status }) => {
           <div 
             className={`w-6 h-6 rounded-full flex items-center justify-center ${
               isStageCompleted(index)
-                ? 'bg-blue-500'
+                ? 'bg-primary'
                 : isCurrentStage(index)
-                ? 'bg-blue-500'
+                ? 'bg-primary'
                 : 'bg-gray-200'
             }`}
           >
@@ -55,8 +55,8 @@ const OrderStatusTimeline = ({ status }) => {
           </div>
           
           {/* Label */}
-          <span className={`text-xs mt-2 ${
-            isCurrentStage(index) ? 'text-blue-500 font-medium' : 'text-gray-500'
+          <span className={`text-xs  ${
+            isCurrentStage(index) ? 'text-primary font-medium' : 'text-black font-medium'
           }`}>
             {stage.label}
           </span>

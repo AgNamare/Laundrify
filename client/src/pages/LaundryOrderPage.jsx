@@ -1,167 +1,235 @@
-import { useState } from 'react';
-import { ArrowLeft, MoreVertical, Minus, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ArrowLeft, MoreVertical, MapPin, LucideSprayCan } from "lucide-react";
+
+import { setOrderDetails } from "../redux/orderSlice";
+import { useGetLaundromatDetails } from "../api/LaundromatApi";
+import { usePlaceOrder } from "../api/OrderApi";
+
+import ServiceTabs from "../components/ServiceTabs";
+import ClothesItem from "../components/ClothesItem";
+import OptionalServices from "../components/OptionalServices";
+import { toast } from "sonner";
 
 const LaundryOrderPage = () => {
-  const [items, setItems] = useState([
-    { id: 1, name: 'T-Shirt', price: 2.5, quantity: 0 },
-    { id: 2, name: 'Jeans', price: 5.5, quantity: 0 },
-    { id: 3, name: 'Short', price: 3.5, quantity: 0 },
-    { id: 4, name: 'Long dress', price: 6.5, quantity: 0 }
-  ]);
+  const { laundromatId } = useParams();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.user?.user?.user);
+  const order = useSelector((state) => state.order.order);
+  const dispatch = useDispatch();
 
-  const [selectedSoftener, setSelectedSoftener] = useState('');
-  const [additionalInstructions, setAdditionalInstructions] = useState('');
+  const { laundromat, isLoading } = useGetLaundromatDetails(laundromatId);
+  const { placeOrder } = usePlaceOrder();
 
-  const softeners = [
-    { id: 'downy', name: 'Downy' },
-    { id: 'stasoft', name: 'Sta Soft' },
-    { id: 'cuddles', name: 'Cuddles' },
-    { id: 'none', name: 'None' }
-  ];
+  const [selectedService, setSelectedService] = useState(null);
+  const [items, setItems] = useState([]);
+  const [additionalInstructions, setAdditionalInstructions] = useState("");
+  const [selectedAddons, setSelectedAddons] = useState([]);
+
+  useEffect(() => {
+    if (laundromat?.services?.length > 0) {
+      setSelectedService(laundromat.services[0].category);
+    }
+  }, [laundromat]);
+
+  useEffect(() => {
+    if (laundromat && selectedService) {
+      const service = laundromat.services.find(
+        (s) => s.category === selectedService
+      );
+      if (service) {
+        setItems(
+          service.prices.map((price) => ({
+            id: price.clothesType._id,
+            image: price.clothesType.imageUrl,
+            name: price.clothesType.name,
+            price: price.customPrice,
+            basePrice: price.customPrice,
+            quantity: 0,
+            unit: service.unit,
+          }))
+        );
+        setSelectedAddons([]); // Reset addons on tab change
+      }
+    }
+  }, [laundromat, selectedService]);
 
   const updateQuantity = (id, increment) => {
-    setItems(items.map(item => {
-      if (item.id === id) {
-        const newQuantity = item.quantity + increment;
-        return {
-          ...item,
-          quantity: newQuantity >= 0 ? newQuantity : 0
-        };
-      }
-      return item;
-    }));
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              quantity: Math.max(0, item.quantity + increment),
+            }
+          : item
+      )
+    );
+  };
+
+  const handleAddonToggle = (addon, isChecked) => {
+    const updatedItems = items.map((item) => {
+      const originalPrice = item.basePrice;
+      const adjustment =
+        (originalPrice * (addon.priceIncreasePercentage || 0)) / 100;
+      return {
+        ...item,
+        price: isChecked ? originalPrice + adjustment : originalPrice,
+      };
+    });
+
+    setItems(updatedItems);
+
+    setSelectedAddons((prev) =>
+      isChecked
+        ? [...prev, addon.category]
+        : prev.filter((cat) => cat !== addon.category)
+    );
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalPrice = items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const handleCheckout = () => {
+    const orderedItems = items.filter((item) => item.quantity > 0);
+    if (orderedItems.length === 0) {
+      toast.info("Please select at least one item.");
+      return;
+    }
+
+    const orderData = {
+      user: user._id, // User's ID
+      laundromat: laundromat._id, // Laundromat's ID
+      services: orderedItems.map((item) => ({
+        category: selectedService, // Selected service category
+        clothesType: item.id, // Clothes type ID
+        quantity: item.quantity, // Quantity of clothes
+        unit: item.unit, // Unit of measurement
+        price: item.price, // Price for the item
+      })),
+      optionalServices: selectedAddons, // Optional services selected
+      totalPrice, // Total price of the order
+      additionalInstructions, // Any additional instructions provided
+    };
+
+    // Dispatch the order details to the Redux store
+    dispatch(setOrderDetails(orderData));
+
+    // Navigate to the checkout page
+    navigate("/checkout");
+  };
+
+  const selectedServiceObj = laundromat?.services?.find(
+    (s) => s.category === selectedService
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <Link to="/" className="text-gray-600">
-          <ArrowLeft size={24} />
-        </Link>
-        <h1 className="text-xl font-semibold">Roumah Laundry</h1>
-        <button className="text-gray-600">
-          <MoreVertical size={24} />
-        </button>
-      </div>
+    <div className="relative min-h-screen flex flex-col items-center">
+      {/* Background */}
+      <div
+        className="absolute inset-0 bg-cover bg-center z-0"
+        style={{ backgroundImage: "url('/path-to-background-image.jpg')" }}
+      ></div>
 
-      {/* Laundry Info */}
-      <div className="mb-6">
-        <div className="bg-white rounded-lg overflow-hidden">
-          <img 
-            src="/images/laundry-machines.jpg" 
-            alt="Laundry Machines" 
-            className="w-full h-48 object-cover"
-          />
-          <div className="p-4">
-            <div className="flex items-center text-sm text-gray-600 space-x-4">
-              <span className="flex items-center">
-                <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                4 Jemput no 03 Santri
-              </span>
-              <span>⭐ 5.0 (254 Reviews)</span>
-            </div>
+      <div className="relative z-10 w-full max-w-lg rounded-lg pb-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 mt-4">
+          <Link to="/" className="text-gray-600">
+            <ArrowLeft size={24} />
+          </Link>
+          <h1 className="text-xl font-semibold">
+            {laundromat?.name || "Laundromat"} Laundry
+          </h1>
+          <MoreVertical size={24} className="text-gray-600" />
+        </div>
+
+        {/* Info */}
+        <div className="mb-4">
+          <div className="flex items-center gap-1 justify-between mb-2">
+            <p className="text-gray-600 flex items-center gap-1 text-sm border border-gray-300 px-2 py-1 rounded-lg">
+              <MapPin size={16} className="text-blue-500" />
+              <span className="text-xs">{laundromat?.address}</span>
+            </p>
+            <p className="text-gray-600 border border-gray-300 text-xs px-2 py-1 rounded-lg">
+              ⭐ {laundromat?.rating || "N/A"} (Reviews)
+            </p>
           </div>
+          <img
+            className="h-40 w-full rounded-lg object-cover"
+            src={
+              laundromat?.imageUrl ||
+              "https://cdn.thewirecutter.com/wp-content/media/2022/05/washing-machine-2048px-8670.jpg"
+            }
+            alt="Laundromat"
+          />
         </div>
-      </div>
 
-      {/* Order List */}
-      <div className="bg-white rounded-lg p-4 mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Order list</h2>
-          <button className="text-blue-500 text-sm">Add Category</button>
-        </div>
+        {/* Service Tabs */}
+        <ServiceTabs
+          services={laundromat?.services || []}
+          selectedService={selectedService}
+          onSelect={setSelectedService}
+        />
 
-        <div className="space-y-4">
-          {items.map(item => (
-            <div key={item.id} className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <img 
-                  src={`/icons/${item.name.toLowerCase().replace(' ', '-')}.svg`} 
-                  alt={item.name}
-                  className="w-8 h-8"
-                />
-                <div>
-                  <p className="font-medium">{item.name}</p>
-                  <p className="text-sm text-gray-500">${item.price}</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <button 
-                  onClick={() => updateQuantity(item.id, -1)}
-                  className="w-8 h-8 flex items-center justify-center text-gray-500 border border-gray-300 rounded-full"
-                >
-                  <Minus size={16} />
-                </button>
-                <span className="w-4 text-center">{item.quantity}</span>
-                <button 
-                  onClick={() => updateQuantity(item.id, 1)}
-                  className="w-8 h-8 flex items-center justify-center text-gray-500 border border-gray-300 rounded-full"
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-            </div>
+        {/* Clothes Items */}
+        <div className="space-y-4 mb-6">
+          {items.map((item) => (
+            <ClothesItem
+              key={item.id}
+              item={item}
+              onQuantityChange={updateQuantity}
+            />
           ))}
         </div>
-      </div>
 
-      {/* Softener Selection */}
-      <div className="bg-white rounded-lg p-4 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Laundry Softener</h2>
-        <div className="space-y-3">
-          {softeners.map(softener => (
-            <label key={softener.id} className="flex items-center space-x-3">
-              <input
-                type="radio"
-                name="softener"
-                value={softener.id}
-                checked={selectedSoftener === softener.id}
-                onChange={(e) => setSelectedSoftener(e.target.value)}
-                className="w-4 h-4 text-blue-500 border-gray-300 focus:ring-blue-500"
-              />
-              <span>{softener.name}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+        {/* Optional Add-ons */}
+        {selectedServiceObj?.optionalServices?.length > 0 && (
+          <OptionalServices
+            options={selectedServiceObj.optionalServices}
+            onToggle={handleAddonToggle}
+          />
+        )}
 
-      {/* Additional Instructions */}
-      <div className="bg-white rounded-lg p-4 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Additional Instructions</h2>
+        {/* Instructions */}
+        <h3 className="font-medium mb-2">Additional Instructions</h3>
         <textarea
           value={additionalInstructions}
           onChange={(e) => setAdditionalInstructions(e.target.value)}
-          placeholder="E.g., Sensitive black trouser"
-          className="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+          placeholder="E.g., Handle with care, separate colors"
+          className="w-full h-24 p-3 bg-white mb-4 rounded-lg"
         />
-      </div>
 
-      {/* Order Summary */}
-      <div className="bg-white rounded-lg p-4 mb-6">
-        <div className="flex justify-between items-center text-sm text-gray-600">
-          <span>Total items</span>
-          <span>{totalItems} Items</span>
+        {/* Summary */}
+        <div className="bg-white rounded-lg p-4 mb-6 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="bg-gray-100 p-1 w-10 h-10 rounded-full flex items-center justify-center">
+              <LucideSprayCan size={24} className="text-primary scale-x-[-1]" />
+            </div>
+            <div className="text-sm">
+              <span className="text-xs text-gray-500">Total items</span>
+              <div className="font-bold">{totalItems} Items</div>
+            </div>
+          </div>
+          <div className="text-sm text-right">
+            <span className="text-xs text-gray-500">Total Cost</span>
+            <div className="font-bold">Ksh {totalPrice.toFixed(2)}</div>
+          </div>
         </div>
-        <div className="flex justify-between items-center mt-2">
-          <span className="font-semibold">Cost</span>
-          <span className="font-semibold">${totalPrice.toFixed(2)}</span>
-        </div>
-      </div>
 
-      {/* Checkout Button */}
-      <button 
-        onClick={() => {/* Handle checkout */}}
-        className="w-full bg-blue-500 text-white py-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
-      >
-        Checkout
-      </button>
+        {/* Checkout */}
+        <button
+          onClick={handleCheckout}
+          className="w-full bg-primary text-white py-4 rounded-lg hover:opacity-75"
+        >
+          Checkout
+        </button>
+      </div>
     </div>
   );
 };
 
-export default LaundryOrderPage; 
+export default LaundryOrderPage;

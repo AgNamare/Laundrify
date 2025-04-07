@@ -2,7 +2,14 @@ import Laundromat from "../models/laundromat.model.js";
 import ClothesType from "../models/clothesType.model.js";
 
 export const addServiceToLaundromatService = async (serviceData) => {
-  const { laundromatId, category, prices, unit, description } = serviceData;
+  const {
+    laundromatId,
+    category,
+    prices,
+    unit,
+    description,
+    optionalServices,
+  } = serviceData;
 
   // 1. Validation
   //    - Ensure laundromat exists
@@ -11,12 +18,21 @@ export const addServiceToLaundromatService = async (serviceData) => {
     throw new Error("Laundromat not found");
   }
 
-  //   - Validate input data
+  const existingService = laundromat.services.find((service) => {
+    console.log("Checking:", service.category, "vs", category);
+    return service.category === category;
+  });
+
+  if (existingService) {
+    throw new Error(`Service with category '${category}' already exists`);
+  }
+
+  //    - Validate input data
   if (!category || !unit || !prices || !Array.isArray(prices)) {
     throw new Error("Invalid service data");
   }
 
-  //   - Validate each price entry in the prices array
+  //    - Validate each price entry in the prices array
   for (const priceEntry of prices) {
     if (!priceEntry.clothesType || !priceEntry.customPrice) {
       throw new Error("Invalid price data");
@@ -29,12 +45,33 @@ export const addServiceToLaundromatService = async (serviceData) => {
     }
   }
 
+  //    - Validate optional services
+  const validOptionalServices = [];
+  if (optionalServices && Array.isArray(optionalServices)) {
+    for (const service of optionalServices) {
+      if (
+        !service.category ||
+        (service.priceIncreasePercentage &&
+          isNaN(service.priceIncreasePercentage))
+      ) {
+        throw new Error("Invalid optional service data");
+      }
+
+      // Optional: Can add validation for specific optional service categories (e.g., Ironing)
+      validOptionalServices.push({
+        category: service.category,
+        priceIncreasePercentage: service.priceIncreasePercentage, // Default to 0 if not provided
+      });
+    }
+  }
+
   // 2. Create the new service
   const newService = {
     category,
     prices,
     unit,
     description,
+    optionalServices: validOptionalServices, // Add optional services here
   };
 
   // 3. Add the service to the laundromat's services array
@@ -64,6 +101,7 @@ export const getLaundromatService = async (laundromatId) => {
     throw new Error("Laundromat not found"); // Or create a custom error
   }
 
+  console.log(laundromat);
   return laundromat;
 };
 
@@ -95,7 +133,7 @@ export const updateServiceByCategory = async (
   serviceData
 ) => {
   try {
-    const laundromat = await Laundromat.findById(laundromatId)
+    const laundromat = await Laundromat.findById(laundromatId);
 
     if (!laundromat) {
       throw new Error("Laundromat not found");
@@ -110,16 +148,35 @@ export const updateServiceByCategory = async (
       throw new Error("Service not found for the given category");
     }
 
-    console.log(laundromat.services[serviceIndex].category)
+    console.log(laundromat.services[serviceIndex].category);
 
-    // Update the service
+    // Update the basic service fields
     laundromat.services[serviceIndex].category = serviceData.category;
     laundromat.services[serviceIndex].unit = serviceData.unit;
     laundromat.services[serviceIndex].description = serviceData.description;
 
-    //Update the prices array
+    // Update the prices array
     laundromat.services[serviceIndex].prices = serviceData.prices;
 
+    // Handle optional services (if any)
+    if (
+      serviceData.optionalServices &&
+      Array.isArray(serviceData.optionalServices)
+    ) {
+      // Update or add new optional services
+      const updatedOptionalServices = serviceData.optionalServices.map(
+        (service) => ({
+          category: service.category,
+          priceIncreasePercentage: service.priceIncreasePercentage || 0, // Default to 0 if not provided
+        })
+      );
+
+      // Replace the old optional services with the new ones
+      laundromat.services[serviceIndex].optionalServices =
+        updatedOptionalServices;
+    }
+
+    // Save the updated laundromat
     await laundromat.save();
 
     return laundromat.services[serviceIndex]; // Return the updated service
@@ -138,4 +195,30 @@ export const getAllServicesForLaundromatService = async (laundromatId) => {
   }
 
   return laundromat.services;
+};
+
+export const getLaundromatsService = async (limit) => {
+  try {
+    let laundromats;
+    if (!limit) {
+      laundromats = await Laundromat.find();
+    } else {
+      laundromats = await Laundromat.find().limit(limit);
+    }
+    return laundromats;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const searchLaundromatService = async (query) => {
+  try {
+    const laundromats = await Laundromat.find({
+      name: { $regex: query, $options: "i" }, // Case-insensitive search
+    }).limit(5); // Limit results to 5 laundromats
+
+    return laundromats;
+  } catch (error) {
+    throw new Error("Error searching for laundromats: " + error.message);
+  }
 };

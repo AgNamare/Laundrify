@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useGetClothesTypes } from "../api/clothesTypeApi";
-import { useAddService } from "../api/laundromatApi";
+import { useAddService } from "../api/LaundromatApi";
 import ServiceManagementForm from "../forms/ServiceManagementForm";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";

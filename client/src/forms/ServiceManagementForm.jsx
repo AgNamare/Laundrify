@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState, useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
 import Loader from "@/components/Loader";
 
 // Form validation schema
@@ -34,8 +34,10 @@ const ServiceManagementForm = ({
   });
 
   const [selectedClothes, setSelectedClothes] = useState({});
+  const [selectedOptionalServices, setSelectedOptionalServices] = useState({
+    ironing: { selected: false, percentage: "" }, // Empty string initially
+  });
 
-  // Load default prices when form loads
   useEffect(() => {
     reset(initialValues);
     if (initialValues?.prices) {
@@ -44,11 +46,15 @@ const ServiceManagementForm = ({
 
       initialValues.prices.forEach((price) => {
         selected[price.clothesType] = true;
-        priceData[price.clothesType] = price.customPrice; // Set custom price
+        priceData[price.clothesType] = price.customPrice;
       });
 
       setSelectedClothes(selected);
-      setValue("prices", priceData, { shouldDirty: true }); // Ensure React updates the form
+      setValue("prices", priceData, { shouldDirty: true });
+    }
+
+    if (initialValues?.optionalServices) {
+      setSelectedOptionalServices(initialValues.optionalServices);
     }
   }, [initialValues, reset, setValue]);
 
@@ -56,6 +62,27 @@ const ServiceManagementForm = ({
     setSelectedClothes((prev) => ({
       ...prev,
       [id]: !prev[id],
+    }));
+  };
+
+  const handleOptionalServiceSelection = (service) => {
+    setSelectedOptionalServices((prev) => ({
+      ...prev,
+      [service]: {
+        ...prev[service],
+        selected: !prev[service].selected,
+        percentage: "", // Reset percentage when toggling checkbox
+      },
+    }));
+  };
+
+  const handlePercentageChange = (service, value) => {
+    setSelectedOptionalServices((prev) => ({
+      ...prev,
+      [service]: {
+        ...prev[service],
+        percentage: value,
+      },
     }));
   };
 
@@ -68,11 +95,19 @@ const ServiceManagementForm = ({
         customPrice: parseFloat(priceValue),
       }));
 
+    const optionalServicesArray = Object.entries(selectedOptionalServices)
+      .filter(([service, { selected }]) => selected)
+      .map(([service, { percentage }]) => ({
+        category: service,
+        priceIncreasePercentage: percentage ? parseFloat(percentage) : 0, // Ensure percentage is numeric
+      }));
+
     const serviceData = {
       category: data.category,
       unit: data.unit,
       description: data.description,
       prices: pricesArray,
+      optionalServices: optionalServicesArray,
     };
 
     onSave(serviceData);
@@ -88,47 +123,88 @@ const ServiceManagementForm = ({
       </h2>
 
       <div className="flex width-full flex-1 gap-2">
+        {/* General Information section */}
         <div className="bg-white flex-1 p-4 rounded-lg border width-full border-slate-200 shadow-sm">
           <h3 className="font-semibold text-md mb-3">General Information</h3>
           <div className="mb-3">
-            <label className="block text-sm text-gray-500">Service Category</label>
-            <select {...register("category")} className="w-full text-sm border border-slate-200 rounded-md p-2">
+            <label className="block text-sm text-gray-500">
+              Service Category
+            </label>
+            <select
+              {...register("category")}
+              className="w-full text-sm border border-slate-200 rounded-md p-2"
+            >
               <option value="">Select Category</option>
               <option value="Wash & Fold">Wash & Fold</option>
               <option value="Dry Cleaning">Dry Cleaning</option>
               <option value="Ironing">Ironing</option>
               <option value="Stain Removal">Stain Removal</option>
             </select>
-            {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>}
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.category.message}
+              </p>
+            )}
           </div>
 
           <div className="mb-3">
             <label className="block text-sm text-gray-500">Unit</label>
-            <select {...register("unit")} className="w-full text-sm border border-slate-200 rounded-md p-2">
+            <select
+              {...register("unit")}
+              className="w-full text-sm border border-slate-200 rounded-md p-2"
+            >
               <option value="">Select Unit</option>
               <option value="Per kg">Per kg</option>
               <option value="Per item">Per item</option>
             </select>
-            {errors.unit && <p className="text-red-500 text-sm mt-1">{errors.unit.message}</p>}
+            {errors.unit && (
+              <p className="text-red-500 text-sm mt-1">{errors.unit.message}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm text-gray-500">Description (Optional)</label>
-            <textarea {...register("description")} className="w-full text-sm border border-slate-200 rounded-md p-2" />
+            <label className="block text-sm text-gray-500">
+              Description (Optional)
+            </label>
+            <textarea
+              {...register("description")}
+              className="w-full text-sm border border-slate-200 rounded-md p-2"
+            />
           </div>
         </div>
 
+        {/* Pricing section */}
         <div className="bg-white flex-1 p-4 rounded-lg border border-slate-200 shadow-sm">
-          <h3 className="font-semibold text-md mb-3">Set Pricing for Clothes</h3>
+          <h3 className="font-semibold text-md mb-3">
+            Set Pricing for Clothes
+          </h3>
           {clothesTypes && clothesTypes.length > 0 ? (
             <div className="border border-slate-200 rounded-lg py-2 max-h-120 overflow-y-auto">
               {clothesTypes.map((type) => (
-                <div key={type._id} className="flex items-center gap-2 border-b border-slate-200 py-2">
-                  <img src={type.imageUrl || "/placeholder-image.jpg"} alt={type.name} className="w-10 h-10 ml-4 object-cover rounded-full shadow-sm" />
+                <div
+                  key={type._id}
+                  className="flex items-center gap-2 border-b border-slate-200 py-2"
+                >
+                  <img
+                    src={type.imageUrl || "/placeholder-image.jpg"}
+                    alt={type.name}
+                    className="w-10 h-10 ml-4 object-cover rounded-full shadow-sm"
+                  />
                   <span className="font-medium text-gray-800">{type.name}</span>
-                  <input type="checkbox" checked={selectedClothes[type._id] || false} onChange={() => handleClothesSelection(type._id)} className="ml-auto h-4 w-4" />
+                  <input
+                    type="checkbox"
+                    checked={selectedClothes[type._id] || false}
+                    onChange={() => handleClothesSelection(type._id)}
+                    className="ml-auto h-4 w-4"
+                  />
                   {selectedClothes[type._id] && (
-                    <input type="number" step="0.01" placeholder="Custom Price" {...register(`prices.${type._id}`)} className="border border-slate-200 text-sm p-2 rounded-lg w-24" />
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder="Custom Price"
+                      {...register(`prices.${type._id}`)}
+                      className="border border-slate-200 text-sm p-2 rounded-lg w-24"
+                    />
                   )}
                 </div>
               ))}
@@ -137,9 +213,40 @@ const ServiceManagementForm = ({
             <p className="text-gray-500">No clothes types available.</p>
           )}
         </div>
+
+        {/* Optional Services section */}
+        <div className="bg-white flex-1 p-4 rounded-lg border border-slate-200 shadow-sm">
+          <h3 className="font-semibold text-md mb-3">Optional Services</h3>
+          <div className="flex items-center gap-2 border-b border-slate-200 py-2">
+            <span className="font-medium text-gray-800">Ironing</span>
+            <input
+              type="checkbox"
+              checked={selectedOptionalServices.ironing.selected}
+              onChange={() => handleOptionalServiceSelection("ironing")}
+              className="ml-auto h-4 w-4"
+            />
+            {selectedOptionalServices.ironing.selected && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={selectedOptionalServices.ironing.percentage}
+                  onChange={(e) =>
+                    handlePercentageChange("ironing", e.target.value)
+                  }
+                  className="border border-slate-200 text-sm p-2 rounded-lg w-24"
+                  placeholder="Increase %"
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <button type="submit" disabled={isLoading} className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:shadow-md">
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:shadow-md"
+      >
         {isLoading ? <Loader /> : action}
       </button>
     </form>

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useLaundromatRegistration } from "../api/authApi";
+import { useLaundromatRegistration } from "../api/AuthApi";
 import LaundromatForm from "../forms/LaundramatForm";
 
 const LaundromatPage = () => {

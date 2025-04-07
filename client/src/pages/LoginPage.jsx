@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useLogin } from "../api/authApi";
+import { useLogin } from "../api/AuthApi";
 import LoginForm from "../forms/LoginForm";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserDetails } from "../redux/userSlice";

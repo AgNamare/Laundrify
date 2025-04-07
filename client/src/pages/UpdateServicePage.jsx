@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useGetServiceByCategory } from "../api/laundromatApi"; // Assuming this is where useGetServiceByCategory is
-import { useUpdateServiceByCategory } from "../api/laundromatApi"; // Assuming this is where useUpdateServiceByCategory is
+import { useGetServiceByCategory } from "../api/LaundromatApi"; // Assuming this is where useGetServiceByCategory is
+import { useUpdateServiceByCategory } from "../api/LaundromatApi"; // Assuming this is where useUpdateServiceByCategory is
 import { useGetClothesTypes } from "../api/clothesTypeApi";
 import ServiceManagementForm from "../forms/ServiceManagementForm";
 import { Plus } from "lucide-react";

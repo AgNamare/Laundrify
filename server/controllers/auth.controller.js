@@ -30,9 +30,19 @@ export const loginHandler = asyncHandler(async (req, res, next) => {
 
   try {
     const data = await loginUser(req.body.email, req.body.password);
-    res.json(data); // Sends { success: true, user: { ...userData, token } }
+
+    // Set token as HTTP-only cookie
+    res.cookie("access_token", data.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Only use secure in production
+      sameSite: "Strict", // Helps prevent CSRF attacks
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // Send user data without token
+    res.json({ success: true, user: data.user });
   } catch (error) {
-    res.status(401).json({ success: false, message: error.message }); // Sends { success: false, message: "Invalid email or password" }
+    res.status(401).json({ success: false, message: error.message });
   }
 });
 
