@@ -8,8 +8,7 @@ import ServiceManagementPage from "./pages/ServiceManagementPage.jsx";
 import DashboardLayout from "./layouts/DashboardLayout.jsx";
 import UpdateServicePage from "./pages/UpdateServicePage.jsx";
 import LaundryOrderPage from "./pages/LaundryOrderPage.jsx";
-import AddNewServicePage from "./pages/AddNewServicePage.jsx";
-import OrderDetails from "./pages/OrderDetailsPage.jsx";
+import UserProfilePage from "./pages/UserProfilePage.jsx";
 
 function AppRoutes() {
   return (
@@ -19,6 +18,7 @@ function AppRoutes() {
       <Route path="/verify" element={<VerifyCodePage />} />
       <Route path="/register-laundromat" element={<LaundramatRegister />} />
       <Route path="/laundry/:id/order" element={<LaundryOrderPage />} />
+      <Route path="/profile" element={<UserProfilePage />} />
 
       {/* Dashboard Layout */}
       <Route path="/laundromat" element={<DashboardLayout />}>
