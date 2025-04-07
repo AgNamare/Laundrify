@@ -34,8 +34,10 @@ const ServiceManagementForm = ({
   });
 
   const [selectedClothes, setSelectedClothes] = useState({});
+  const [selectedOptionalServices, setSelectedOptionalServices] = useState({
+    ironing: { selected: false, percentage: "" }, // Empty string initially
+  });
 
-  // Load default prices when form loads
   useEffect(() => {
     reset(initialValues);
     if (initialValues?.prices) {
@@ -44,11 +46,15 @@ const ServiceManagementForm = ({
 
       initialValues.prices.forEach((price) => {
         selected[price.clothesType] = true;
-        priceData[price.clothesType] = price.customPrice; // Set custom price
+        priceData[price.clothesType] = price.customPrice;
       });
 
       setSelectedClothes(selected);
-      setValue("prices", priceData, { shouldDirty: true }); // Ensure React updates the form
+      setValue("prices", priceData, { shouldDirty: true });
+    }
+
+    if (initialValues?.optionalServices) {
+      setSelectedOptionalServices(initialValues.optionalServices);
     }
   }, [initialValues, reset, setValue]);
 
@@ -56,6 +62,27 @@ const ServiceManagementForm = ({
     setSelectedClothes((prev) => ({
       ...prev,
       [id]: !prev[id],
+    }));
+  };
+
+  const handleOptionalServiceSelection = (service) => {
+    setSelectedOptionalServices((prev) => ({
+      ...prev,
+      [service]: {
+        ...prev[service],
+        selected: !prev[service].selected,
+        percentage: "", // Reset percentage when toggling checkbox
+      },
+    }));
+  };
+
+  const handlePercentageChange = (service, value) => {
+    setSelectedOptionalServices((prev) => ({
+      ...prev,
+      [service]: {
+        ...prev[service],
+        percentage: value,
+      },
     }));
   };
 
@@ -68,11 +95,19 @@ const ServiceManagementForm = ({
         customPrice: parseFloat(priceValue),
       }));
 
+    const optionalServicesArray = Object.entries(selectedOptionalServices)
+      .filter(([service, { selected }]) => selected)
+      .map(([service, { percentage }]) => ({
+        category: service,
+        priceIncreasePercentage: percentage ? parseFloat(percentage) : 0, // Ensure percentage is numeric
+      }));
+
     const serviceData = {
       category: data.category,
       unit: data.unit,
       description: data.description,
       prices: pricesArray,
+      optionalServices: optionalServicesArray,
     };
 
     onSave(serviceData);
@@ -88,6 +123,7 @@ const ServiceManagementForm = ({
       </h2>
 
       <div className="flex width-full flex-1 gap-2">
+        {/* General Information section */}
         <div className="bg-white flex-1 p-4 rounded-lg border width-full border-slate-200 shadow-sm">
           <h3 className="font-semibold text-md mb-3">General Information</h3>
           <div className="mb-3">
@@ -137,6 +173,7 @@ const ServiceManagementForm = ({
           </div>
         </div>
 
+        {/* Pricing section */}
         <div className="bg-white flex-1 p-4 rounded-lg border border-slate-200 shadow-sm">
           <h3 className="font-semibold text-md mb-3">
             Set Pricing for Clothes
@@ -175,6 +212,33 @@ const ServiceManagementForm = ({
           ) : (
             <p className="text-gray-500">No clothes types available.</p>
           )}
+        </div>
+
+        {/* Optional Services section */}
+        <div className="bg-white flex-1 p-4 rounded-lg border border-slate-200 shadow-sm">
+          <h3 className="font-semibold text-md mb-3">Optional Services</h3>
+          <div className="flex items-center gap-2 border-b border-slate-200 py-2">
+            <span className="font-medium text-gray-800">Ironing</span>
+            <input
+              type="checkbox"
+              checked={selectedOptionalServices.ironing.selected}
+              onChange={() => handleOptionalServiceSelection("ironing")}
+              className="ml-auto h-4 w-4"
+            />
+            {selectedOptionalServices.ironing.selected && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={selectedOptionalServices.ironing.percentage}
+                  onChange={(e) =>
+                    handlePercentageChange("ironing", e.target.value)
+                  }
+                  className="border border-slate-200 text-sm p-2 rounded-lg w-24"
+                  placeholder="Increase %"
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

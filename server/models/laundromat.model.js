@@ -1,6 +1,20 @@
 import mongoose from "mongoose";
 
+// Optional Service Schema for add-ons
+const optionalServiceSchema = new mongoose.Schema({
+  category: {
+    type: String,
+    required: true,
+  },
+  priceIncreasePercentage: {  // Percentage increase in total price for this optional service
+    type: Number,
+    required: true,
+    min: 0,
+    max: 100,
+  },
+});
 
+// Service Schema (For both primary and optional services)
 const serviceSchema = new mongoose.Schema({
   category: {
     type: String,
@@ -19,8 +33,9 @@ const serviceSchema = new mongoose.Schema({
       },
     },
   ],
+  optionalServices: [ optionalServiceSchema ],
   unit: {
-    type: String,  // How the price is measured
+    type: String,  // How the price is measured (e.g., per item, per kilogram)
     required: true,
   },
   description: {
@@ -29,47 +44,51 @@ const serviceSchema = new mongoose.Schema({
   },
 });
 
-const laundromatSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-  contactNumber: {
-    type: String,
-    required: true,
-  },
-  operatingHours: {
-    type: Map,
-    of: String,
-    required: false,
-  },
-  location: {
-    type: {
+// Laundromat Schema
+const laundromatSchema = new mongoose.Schema(
+  {
+    name: {
       type: String,
-      enum: ["Point"],
+      required: true,
+      unique: true,
+    },
+    address: {
+      type: String,
       required: true,
     },
-    coordinates: {
-      type: [Number],
+    contactNumber: {
+      type: String,
       required: true,
     },
+    operatingHours: {
+      type: Map,
+      of: String,
+      required: false,
+    },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
+    },
+    description: {
+      type: String,
+      required: false,
+    },
+    admin: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    services: [serviceSchema],  // Main services like washing, folding, etc.
   },
-  description: {
-    type: String,
-    required: false,
-  },
-  admin: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  services: [serviceSchema],
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 laundromatSchema.index({ location: "2dsphere" });
 

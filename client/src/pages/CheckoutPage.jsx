@@ -1,94 +1,138 @@
-import { useState } from 'react';
-import { FaCreditCard } from 'react-icons/fa';
-import { SiMpesa } from 'react-icons/si';
-import { IoArrowBack } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { setOrderDetails } from "../redux/orderSlice";
+import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Mastecard from "../assets/images/Mastercard.png";
+import Mpesa from "../assets/images/Mpesa.png";
+import PaymentSuccess from "../components/PaymentSuccess"; // Import your PaymentSuccess component
 
-const PaymentSuccess = ({ onClose }) => {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-8 max-w-sm w-full mx-4">
-        <div className="flex flex-col items-center">
-          <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mb-4">
-            <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-semibold text-center mb-2">Payment Success</h2>
-          <p className="text-gray-600 text-center mb-6">
-            Your payment was successful. Just wait your clean clothes arrive at home
-          </p>
-          <button
-            onClick={() => onClose()}
-            className="w-full bg-white border-2 border-blue-500 text-blue-500 py-3 rounded-lg mb-3"
-          >
-            Details order
-          </button>
-          <button
-            onClick={() => onClose()}
-            className="w-full bg-blue-500 text-white py-3 rounded-lg"
-          >
-            Back home
-          </button>
-        </div>
-      </div>
+// Back Button
+const BackButton = ({ onClick }) => (
+  <button onClick={onClick} className="p-2 rounded-full hover:bg-gray-100">
+    <ArrowLeft className="w-6 h-6" />
+  </button>
+);
+
+// Reusable Payment Option
+const PaymentMethodOption = ({
+  imageSrc,
+  label,
+  value,
+  selected,
+  onSelect,
+}) => (
+  <label className="flex items-center justify-between px-3 py-5 border-b-1 border-b-slate-300 cursor-pointer">
+    <div className="flex items-center space-x-3">
+      {/* Display image instead of icon */}
+      <img src={imageSrc} alt={label} className="w-6 h-6 text-gray-600" />
+      <span>{label}</span>
     </div>
-  );
-};
+    <input
+      type="radio"
+      name="payment"
+      value={value}
+      checked={selected === value}
+      onChange={() => onSelect(value)}
+      className="form-radio text-primary"
+    />
+  </label>
+);
 
-const Checkout = () => {
+const CheckoutPage = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [paymentMethod, setPaymentMethod] = useState('');
+  const address = useSelector((state) => state.location); // Access the address from Redux store
+  const totalPrice = useSelector((state) => state.order?.order?.totalPrice); // Access totalPrice from Redux store
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [showCardForm, setShowCardForm] = useState(false);
   const [showMpesaForm, setShowMpesaForm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [cardDetails, setCardDetails] = useState({
-    number: '',
-    expiry: '',
-    cvc: '',
+    number: "",
+    expiry: "",
+    cvc: "",
   });
-  const [mpesaNumber, setMpesaNumber] = useState('');
+  const [mpesaNumber, setMpesaNumber] = useState("");
+  const [showEditAddressModal, setShowEditAddressModal] = useState(false);
+  const [editedDeliveryAddress, setEditedDeliveryAddress] = useState(null);
+
+  const orderData = useSelector((state) => state.order.order);
 
   const handlePaymentMethodSelect = (method) => {
     setPaymentMethod(method);
-    setShowCardForm(method === 'card');
-    setShowMpesaForm(method === 'mpesa');
+    setShowCardForm(method === "card");
+    setShowMpesaForm(method === "mpesa");
   };
 
   const handleCardSubmit = (e) => {
     e.preventDefault();
-    // Here you would typically handle card payment processing
+    // Dispatch order details to Redux store
+    const orderDetails = {
+      paymentMethod: "Credit Card",
+      totalPrice: totalPrice,
+      delivery: {
+        pickupLocation: {
+          coordinates: address.coords,
+        },
+        deliveryLocation: {
+          coordinates: editedDeliveryAddress?.coordinates || address.coords,
+        },
+        deliveryStatus: "Pending", // Default status
+      },
+      cardDetails,
+    };
+    console.log("Order Details (Card):", orderDetails); // Log the order details
+    dispatch(setOrderDetails(orderDetails));
     setShowSuccess(true);
   };
 
   const handleMpesaSubmit = (e) => {
     e.preventDefault();
-    // Here you would typically handle Mpesa payment processing
+
+    // Construct the M-Pesa payment details
+    const orderDetails = {
+      ...orderData, // Spread the existing order data (services, items, etc.)
+      paymentMethod: "M-Pesa",
+      totalPrice: totalPrice, // Update total price if needed
+      delivery: {
+        pickupLocation: {
+          coordinates: address.coords, // Pickup location coordinates
+        },
+        deliveryLocation: {
+          coordinates: editedDeliveryAddress?.coordinates || address.coords, // Delivery location coordinates
+        },
+        deliveryStatus: "Pending", // Default status
+      },
+      mpesaNumber, // The M-Pesa phone number for payment
+    };
+
+    console.log("Order Details (M-Pesa):", orderDetails); // Log the order details
+
+    // Dispatch the updated order details to Redux store
+    dispatch(setOrderDetails(orderDetails));
+
+    // Show success notification or modal
     setShowSuccess(true);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="">
       {/* Header */}
       <div className="flex items-center mb-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 rounded-full hover:bg-gray-100"
-        >
-          <IoArrowBack className="w-6 h-6" />
-        </button>
+        <BackButton onClick={() => navigate(-1)} />
         <h1 className="text-xl font-semibold ml-4">Checkout</h1>
       </div>
 
       {/* Service Type Selection */}
       <div className="bg-white rounded-lg p-4 mb-4">
-        <div className="space-y-3">
-          <label className="flex items-center space-x-3">
+        <div className="space-y-2">
+          <label className="flex items-center space-x-3 border-b-2 border-slate-200 pb-3">
             <input
               type="radio"
               name="service"
               value="self"
-              className="form-radio text-blue-500"
+              className="form-radio text-primary"
             />
             <span>Self service</span>
           </label>
@@ -97,84 +141,96 @@ const Checkout = () => {
               type="radio"
               name="service"
               value="delivery"
-              className="form-radio text-blue-500"
+              className="form-radio text-primary"
               defaultChecked
             />
             <span>Delivery service</span>
           </label>
           <div className="pl-7">
-            <p className="text-gray-500 text-sm">Springville, Gate C</p>
+            {/* Display the edited address if available, otherwise fall back to the address from Redux */}
+            <p className="text-gray-500 text-sm">
+              {editedDeliveryAddress?.address ||
+                address.address ||
+                "Address not set"}
+            </p>
+          </div>
+
+          <div className="text-right">
+            <span
+              onClick={() => setShowEditAddressModal(true)}
+              className="text-primary cursor-pointer underline font-medium text-sm"
+            >
+              Edit Address
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Payment Methods */}
+      {/* Payment Method Selection */}
+      <h2 className="font-semibold mb-4">Payment method</h2>
       <div className="bg-white rounded-lg p-4 mb-4">
-        <h2 className="font-semibold mb-4">Payment method</h2>
         <div className="space-y-3">
-          <label className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-            <div className="flex items-center space-x-3">
-              <FaCreditCard className="w-6 h-6 text-gray-600" />
-              <span>Credit card</span>
-            </div>
-            <input
-              type="radio"
-              name="payment"
-              value="card"
-              checked={paymentMethod === 'card'}
-              onChange={() => handlePaymentMethodSelect('card')}
-              className="form-radio text-blue-500"
-            />
-          </label>
-
-          <label className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-            <div className="flex items-center space-x-3">
-              <SiMpesa className="w-6 h-6 text-gray-600" />
-              <span>M-Pesa</span>
-            </div>
-            <input
-              type="radio"
-              name="payment"
-              value="mpesa"
-              checked={paymentMethod === 'mpesa'}
-              onChange={() => handlePaymentMethodSelect('mpesa')}
-              className="form-radio text-blue-500"
-            />
-          </label>
+          <PaymentMethodOption
+            imageSrc={Mastecard}
+            label="Credit card"
+            value="card"
+            selected={paymentMethod}
+            onSelect={handlePaymentMethodSelect}
+          />
+          <PaymentMethodOption
+            imageSrc={Mpesa}
+            label="M-Pesa"
+            value="mpesa"
+            selected={paymentMethod}
+            onSelect={handlePaymentMethodSelect}
+          />
         </div>
 
         {/* Card Form */}
         {showCardForm && (
           <form onSubmit={handleCardSubmit} className="mt-4 space-y-4">
+            {/* Card Form Inputs */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">Card number</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Card Number
+              </label>
               <input
                 type="text"
-                placeholder="1234 5678 9012 3456"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                placeholder="Enter your card number"
+                className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:outline-primary"
                 value={cardDetails.number}
-                onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
+                onChange={(e) =>
+                  setCardDetails({ ...cardDetails, number: e.target.value })
+                }
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Expiry date</label>
+            <div className="flex space-x-4">
+              <div className="w-1/2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Expiry Date
+                </label>
                 <input
                   type="text"
                   placeholder="MM/YY"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:outline-primary"
                   value={cardDetails.expiry}
-                  onChange={(e) => setCardDetails({ ...cardDetails, expiry: e.target.value })}
+                  onChange={(e) =>
+                    setCardDetails({ ...cardDetails, expiry: e.target.value })
+                  }
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">CVC</label>
+              <div className="w-1/2">
+                <label className="block text-sm font-medium text-gray-700">
+                  CVC
+                </label>
                 <input
                   type="text"
-                  placeholder="123"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="CVC"
+                  className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:outline-primary"
                   value={cardDetails.cvc}
-                  onChange={(e) => setCardDetails({ ...cardDetails, cvc: e.target.value })}
+                  onChange={(e) =>
+                    setCardDetails({ ...cardDetails, cvc: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -185,15 +241,18 @@ const Checkout = () => {
         {showMpesaForm && (
           <form onSubmit={handleMpesaSubmit} className="mt-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">M-Pesa number</label>
+              <label className="block text-sm font-medium text-gray-700">
+                M-Pesa number
+              </label>
               <input
                 type="tel"
                 placeholder="Enter your M-Pesa number"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:outline-primary"
                 value={mpesaNumber}
                 onChange={(e) => setMpesaNumber(e.target.value)}
               />
             </div>
+            <button type="submit"> Pay</button>
           </form>
         )}
       </div>
@@ -201,19 +260,23 @@ const Checkout = () => {
       {/* Pay Button */}
       <button
         onClick={() => paymentMethod && setShowSuccess(true)}
-        className="w-full bg-blue-500 text-white py-4 rounded-lg font-semibold"
+        className="w-full bg-primary text-white py-4 rounded-lg font-semibold"
         disabled={!paymentMethod}
       >
-        Pay ($52.0)
+        Pay (ksh{totalPrice})
       </button>
 
       {/* Success Modal */}
-      {showSuccess && <PaymentSuccess onClose={() => {
-        setShowSuccess(false);
-        navigate('/');
-      }} />}
+      {showSuccess && (
+        <PaymentSuccess
+          onClose={() => {
+            setShowSuccess(false);
+            navigate("/"); // Navigate to home after success
+          }}
+        />
+      )}
     </div>
   );
 };
 
-export default Checkout; 
+export default CheckoutPage;

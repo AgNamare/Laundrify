@@ -1,24 +1,36 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  order: null,
+  order: {
+    user: null,
+    laundromat: null,
+    services: [],
+    totalPrice: 0,
+    paymentMethod: '',
+    delivery: {
+      pickupLocation: {
+        type: 'Point',
+        coordinates: [],
+      },
+      deliveryLocation: {
+        type: 'Point',
+        coordinates: [],
+      },
+      deliveryStatus: 'Pending',
+    },
+    placedAt: new Date(),
+  },
 };
 
 const orderSlice = createSlice({
-  name: "order",
+  name: 'order',
   initialState,
   reducers: {
     setOrderDetails(state, action) {
-      state.order = action.payload; // Store order details before checkout
-    },
-    clearOrderDetails(state) {
-      state.order = null; // Clear order after submission or cancellation
+      state.order = { ...state.order, ...action.payload };
     },
   },
 });
 
-// Export actions
-export const { setOrderDetails, clearOrderDetails } = orderSlice.actions;
-
-// Export reducer
+export const { setOrderDetails } = orderSlice.actions;
 export default orderSlice.reducer;

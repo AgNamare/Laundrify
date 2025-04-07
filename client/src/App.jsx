@@ -12,17 +12,22 @@ import AddNewServicePage from "./pages/AddNewServicePage.jsx";
 import OrderDetails from "./pages/OrderDetailsPage.jsx";
 import OrderStatusTimeline from "./components/OrderStatusTimeline.jsx";
 import Homepage from "./pages/Homepage.jsx";
+import Layout from "./layouts/Layout.jsx";
+import CheckoutPage from "./pages/CheckoutPage.jsx";
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/" element={<LaundromatHomepage />} />
-      <Route path="/l" element={<LaundryOrderPage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/verify" element={<VerifyCodePage />} />
       <Route path="/register-laundromat" element={<LaundramatRegister />} />
-      <Route path="/laundry/:laundromatId/" element={<LaundryOrderPage />} />
+      <Route path="/verify" element={<VerifyCodePage />} />
+
+      <Route path="/app" element={<Layout />}>
+        <Route path="/app" element={<LaundromatHomepage />} />
+        <Route path="/app/c" element={<CheckoutPage />} />
+        <Route path="/app/laundry/:laundromatId/" element={<LaundryOrderPage />} />
+      </Route>
 
       {/* Dashboard Layout */}
       <Route path="/laundromat" element={<DashboardLayout />}>

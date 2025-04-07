@@ -3,16 +3,18 @@ import { persistReducer, persistStore } from "redux-persist";
 import UserReducer from "./userSlice.js";
 import OrderReducer from "./orderSlice.js"
 import storage from "redux-persist/lib/storage";
+import locationReducer from "./locationSlice";
 
 const rootReducer = combineReducers({
   user: UserReducer,
   order: OrderReducer,
+  location: locationReducer,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user"],
+  whitelist: ["user", "order","location"],
   version: 1,
 };
 
