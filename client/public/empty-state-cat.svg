@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Laundry Basket -->
+  <path d="M40 80C40 80 45 140 100 140C155 140 160 80 160 80" stroke="#E2E8F0" stroke-width="4"/>
+  <path d="M30 80H170" stroke="#E2E8F0" stroke-width="4"/>
+  <path d="M50 80C50 80 80 50 100 50C120 50 150 80 150 80" fill="none" stroke="#E2E8F0" stroke-width="4"/>
+  
+  <!-- Cat -->
+  <g transform="translate(70 65)">
+    <!-- Body -->
+    <path d="M30 40C30 40 20 60 30 70C40 80 60 80 70 70C80 60 70 40 70 40" fill="#60A5FA"/>
+    
+    <!-- Head -->
+    <circle cx="50" cy="35" r="20" fill="#60A5FA"/>
+    
+    <!-- Ears -->
+    <path d="M35 20L30 5L45 15Z" fill="#60A5FA"/>
+    <path d="M65 20L70 5L55 15Z" fill="#60A5FA"/>
+    
+    <!-- Eyes (closed) -->
+    <path d="M40 30C40 30 43 35 47 35" stroke="#1E40AF" stroke-width="2" stroke-linecap="round"/>
+    <path d="M53 35C53 35 57 30 60 30" stroke="#1E40AF" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Nose -->
+    <circle cx="50" cy="40" r="2" fill="#1E40AF"/>
+    
+    <!-- Whiskers -->
+    <line x1="30" y1="40" x2="45" y2="42" stroke="#1E40AF" stroke-width="1"/>
+    <line x1="30" y1="43" x2="45" y2="43" stroke="#1E40AF" stroke-width="1"/>
+    <line x1="30" y1="46" x2="45" y2="44" stroke="#1E40AF" stroke-width="1"/>
+    
+    <line x1="55" y1="42" x2="70" y2="40" stroke="#1E40AF" stroke-width="1"/>
+    <line x1="55" y1="43" x2="70" y2="43" stroke="#1E40AF" stroke-width="1"/>
+    <line x1="55" y1="44" x2="70" y2="46" stroke="#1E40AF" stroke-width="1"/>
+  </g>
+  
+  <!-- Towel -->
+  <path d="M150 90C150 90 160 100 150 110C140 120 130 110 130 110" stroke="#E2E8F0" stroke-width="4" stroke-linecap="round"/>
+</svg> 
