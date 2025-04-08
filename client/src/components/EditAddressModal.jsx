@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { Autocomplete } from "@react-google-maps/api";
-import { X } from "lucide-react"; // Importing close icon from Lucide React
+import { X } from "lucide-react";
 
 const EditAddressModal = ({ onClose, setEditedDeliveryAddress }) => {
   const inputRef = useRef(null);
@@ -8,22 +8,21 @@ const EditAddressModal = ({ onClose, setEditedDeliveryAddress }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    setIsOpen(true); // When modal is shown, start the animation
+    setIsOpen(true);
     return () => {
-      setIsOpen(false); // When modal is closed, remove animation
+      setIsOpen(false);
     };
   }, []);
 
   const handlePlaceChanged = () => {
     const place = autocompleteRef.current.getPlace();
-
     if (!place || !place.geometry) return;
 
     const address = place.formatted_address;
-    const coordinates = {
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
-    };
+    const coordinates = [
+      place.geometry.location.lng(), // longitude first
+      place.geometry.location.lat(), // latitude second
+    ];
 
     setEditedDeliveryAddress({ address, coordinates });
     onClose();
@@ -44,7 +43,7 @@ const EditAddressModal = ({ onClose, setEditedDeliveryAddress }) => {
           <h2 className="text-xl font-semibold">Edit Address</h2>
           <X
             className="w-6 h-6 cursor-pointer text-gray-600 hover:text-gray-900"
-            onClick={onClose} // Close the modal when clicked
+            onClick={onClose}
           />
         </div>
 

@@ -35,7 +35,7 @@ const OrderDetails = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 space-y-4">
+    <div className=" bg-gray-100 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-start mb-2">
         <Link to="/orders" className="text-gray-600">

@@ -8,9 +8,9 @@ const PaymentSuccessModal = ({ onClose, onDetailsOrder, onBackHome }) => {
         <div className="flex flex-col items-center">
           <div className="relative w-80 h-80 mb-4">
             {/* Outer Red Circle */}
-            <div className="absolute inset-2 rounded-full bg-white bg-opacity-10 opacity-20"></div>
+            <div className="absolute inset-4 animate-pulse rounded-full bg-[#FFFFFF70] bg-opacity-20 opacity-10"></div>
             {/* Middle White Circle */}
-            <div className="absolute inset-12 rounded-full bg-white flex items-center opacity-90 justify-center">
+            <div className="absolute inset-12 rounded-full bg-white flex items-center opacity-80 justify-center">
               {/* Inner Blue Circle with Tick */}
               <div className="w-40 h-40 bg-primary rounded-full flex items-center justify-center">
                 <Check className=" text-white" size={120} />

@@ -120,7 +120,7 @@ const LaundryOrderPage = () => {
     dispatch(setOrderDetails(orderData));
 
     // Navigate to the checkout page
-    navigate("/checkout");
+    navigate("/app/checkout");
   };
 
   const selectedServiceObj = laundromat?.services?.find(
@@ -138,7 +138,7 @@ const LaundryOrderPage = () => {
       <div className="relative z-10 w-full max-w-lg rounded-lg pb-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 mt-4">
-          <Link to="/" className="text-gray-600">
+          <Link to="/app/checkout" className="text-gray-600">
             <ArrowLeft size={24} />
           </Link>
           <h1 className="text-xl font-semibold">

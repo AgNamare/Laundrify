@@ -9,6 +9,7 @@ import {
   useGetLaundromats,
 } from "../api/LaundromatApi";
 import { useDispatch } from "react-redux";
+import washingMachine from "../assets/illustrations/washing_machine.png";
 import { setUserLocation } from "../redux/locationSlice";
 
 const LaundromatHomepage = () => {
@@ -54,7 +55,7 @@ const LaundromatHomepage = () => {
               // Dispatch the address to the Redux store
               dispatch(
                 setUserLocation({
-                  coords: { latitude, longitude },
+                  coords: [latitude, longitude],
                   address: formattedAddress,
                 })
               );
@@ -181,9 +182,9 @@ const LaundromatHomepage = () => {
           </button>
         </div>
         <img
-          src="https://cdn-icons-png.flaticon.com/512/1048/1048953.png"
+          src={washingMachine}
           alt="Laundry"
-          className="w-16 h-16 object-cover opacity-80"
+          className="w-fit h-28 object-cover "
         />
       </div>
 

@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { LoadScript } from "@react-google-maps/api";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import VerifyCodePage from "./pages/VerifyCodePage.jsx";
@@ -15,41 +16,50 @@ import Homepage from "./pages/Homepage.jsx";
 import Layout from "./layouts/Layout.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 
+const libraries = ["places"];
+
 function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register-laundromat" element={<LaundramatRegister />} />
-      <Route path="/verify" element={<VerifyCodePage />} />
+    <LoadScript
+      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+      libraries={libraries}
+    >
+      <Routes>
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register-laundromat" element={<LaundramatRegister />} />
+        <Route path="/verify" element={<VerifyCodePage />} />
 
-      <Route path="/app" element={<Layout />}>
-        <Route path="/app" element={<LaundromatHomepage />} />
-        <Route path="/app/c" element={<CheckoutPage />} />
-        <Route path="/app/laundry/:laundromatId/" element={<LaundryOrderPage />} />
-      </Route>
-      {/* MARK ADDED THIS SO EDIT ROUTE APPROPRIATELY */}
-      <Route path="/laundry" element={<OrderDetails />} /> 
-      
+        <Route path="/app" element={<Layout />}>
+          <Route path="/app" element={<LaundromatHomepage />} />
+          <Route path="/app/checkout" element={<CheckoutPage />} />
+          <Route
+            path="/app/laundry/:laundromatId/"
+            element={<LaundryOrderPage />}
+          />
+          <Route path="/app/history" element={<OrderDetails />} />
+        </Route>
+        {/* MARK ADDED THIS SO EDIT ROUTE APPROPRIATELY */}
 
-      {/* Dashboard Layout */}
-      <Route path="/laundromat" element={<DashboardLayout />}>
-        <Route path="/laundromat/dashboard" element={<Homepage />} />
-        <Route
-          path="/laundromat/:laundromatId/services"
-          element={<ServiceManagementPage />}
-        />
-        <Route
-          path="/laundromat/:laundromatId/services/add"
-          element={<AddNewServicePage />}
-        />
-        <Route
-          path="/laundromat/:laundromatId/services/:category"
-          element={<UpdateServicePage />}
-        />
-        <Route path="/laundromat" element={<DashboardLayout />} />
-      </Route>
-    </Routes>
+        {/* Dashboard Layout */}
+        <Route path="/laundromat" element={<DashboardLayout />}>
+          <Route path="/laundromat/dashboard" element={<Homepage />} />
+          <Route
+            path="/laundromat/:laundromatId/services"
+            element={<ServiceManagementPage />}
+          />
+          <Route
+            path="/laundromat/:laundromatId/services/add"
+            element={<AddNewServicePage />}
+          />
+          <Route
+            path="/laundromat/:laundromatId/services/:category"
+            element={<UpdateServicePage />}
+          />
+          <Route path="/laundromat" element={<DashboardLayout />} />
+        </Route>
+      </Routes>
+    </LoadScript>
   );
 }
 

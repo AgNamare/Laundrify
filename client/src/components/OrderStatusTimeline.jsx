@@ -21,9 +21,9 @@ const OrderStatusTimeline = ({ status }) => {
   };
 
   return (
-    <div className="flex justify-between items-center px-4">
+    <div className="flex justify-center items-center px-2 ">
       {stages.map((stage, index) => (
-        <div key={stage.id} className="flex flex-row gap-2 justify-center items-center relative">
+        <div key={stage.id} className="flex flex-row gap-1 mx-2 justify-center items-center relative">
           {/* Connector Line */}
           {index < stages.length - 1 && (
             <div 
@@ -35,7 +35,7 @@ const OrderStatusTimeline = ({ status }) => {
           
           {/* Status Circle */}
           <div 
-            className={`w-6 h-6 rounded-full flex items-center justify-center ${
+            className={`w-4 h-4 rounded-full flex items-center justify-center ${
               isStageCompleted(index)
                 ? 'bg-primary'
                 : isCurrentStage(index)
