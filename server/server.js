@@ -8,6 +8,7 @@ import orderRoutes from "./routes/order.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
 import reviewRoutes from "./routes/review.routes.js";
 import cors from "cors";
+import mpesaRoutes from './routes/mpesa.routes.js';
 
 // Load environment variables
 dotenv.config();
@@ -34,6 +35,8 @@ app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/laundromats", laundromatRoutes);
 app.use("/api/v1/clothes-types", clothesRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
+
+app.use('/api/v1/mpesa', mpesaRoutes);
 
 app.use(errorHandler);
 
