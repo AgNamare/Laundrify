@@ -3,7 +3,7 @@ import { LoadScript } from "@react-google-maps/api";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import VerifyCodePage from "./pages/VerifyCodePage.jsx";
-import LaundromatRegister from "./pages/LaundromatRegister.jsx";
+// import LaundromatRegister from "./pages/LaundromatRegister.jsx"; // Still commented if missing
 import LaundromatHomepage from "./pages/LaundromatHomepage.jsx";
 import ServiceManagementPage from "./pages/ServiceManagementPage.jsx";
 import DashboardLayout from "./layouts/DashboardLayout.jsx";
@@ -14,6 +14,8 @@ import OrderStatusTimeline from "./components/OrderStatusTimeline.jsx";
 import Homepage from "./pages/Homepage.jsx";
 import Layout from "./layouts/Layout.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
+import History from "./pages/HistoryPage.jsx";
+import LaundryOrderPage from "./pages/LaundryOrderPage.jsx"; // ✅ Add this
 
 const libraries = ["places"];
 
@@ -26,8 +28,10 @@ function AppRoutes() {
       <Routes>
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register-laundromat" element={<LaundramatRegister />} />
         <Route path="/verify" element={<VerifyCodePage />} />
+
+        {/* 🚫 Commented out because LaundromatRegister is not defined */}
+        {/* <Route path="/register-laundromat" element={<LaundromatRegister />} /> */}
 
         <Route path="/app" element={<Layout />}>
           <Route path="/app" element={<LaundromatHomepage />} />
@@ -36,9 +40,9 @@ function AppRoutes() {
             path="/app/laundry/:laundromatId/"
             element={<LaundryOrderPage />}
           />
+          <Route path="/app/laundry" element={<History />}></Route>
           <Route path="/app/history" element={<OrderDetails />} />
         </Route>
-        {/* MARK ADDED THIS SO EDIT ROUTE APPROPRIATELY */}
 
         {/* Dashboard Layout */}
         <Route path="/laundromat" element={<DashboardLayout />}>

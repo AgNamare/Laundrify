@@ -1,45 +1,49 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { FaHome, FaComments, FaHistory, FaUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-const ProgressStep = ({ step, isCompleted, isLast }) => (
+const ProgressStep = ({ step, isCompleted, isCurrent }) => (
   <div className="flex items-center">
-    <div className={`w-4 h-4 rounded-full ${isCompleted ? 'bg-blue-500' : 'bg-gray-300'}`} />
+    <div className={`relative w-4 h-4 rounded-full ${isCompleted || isCurrent ? 'bg-blue-500' : 'bg-gray-300'}`}>
+      {isCurrent && <div className="absolute inset-[4px] bg-white rounded-full" />}
+    </div>
     <span className="mx-2 text-sm text-gray-600">{step}</span>
-    {!isLast && (
-      <div className={`w-8 h-0.5 ${isCompleted ? 'bg-blue-500' : 'bg-gray-300'}`} />
-    )}
   </div>
 );
 
-const LaundryHistoryItem = ({ laundryName, date, steps, status }) => {
-  return (
-    <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="font-semibold text-gray-800">{laundryName}</h3>
-        <span className={`px-3 py-1 rounded-full text-sm ${
-          status === 'Completed' 
-            ? 'bg-emerald-100 text-emerald-600'
-            : 'bg-yellow-100 text-yellow-600'
-        }`}>
-          {status}
-        </span>
-      </div>
-      <p className="text-xs text-gray-500 mb-3">{date}</p>
-      <div className="flex justify-between items-center">
-        {steps.map((step, index) => (
-          <ProgressStep
-            key={step.name}
-            step={step.name}
-            isCompleted={step.completed}
-            isLast={index === steps.length - 1}
-          />
-        ))}
-      </div>
+
+const LaundryHistoryItem = ({ laundryName, date, steps, status }) => (
+  <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
+    <div className="flex justify-between items-center mb-2">
+      <h3 className="font-semibold text-gray-800">{laundryName}</h3>
+      <span className={`px-3 py-1 rounded-full text-sm ${status === 'Completed' ? 'bg-emerald-100 text-emerald-600' : 'bg-yellow-100 text-yellow-600'}`}>
+        {status}
+      </span>
     </div>
-  );
-};
+    <p className="text-xs text-gray-500 mb-3">{date}</p>
+    <div className="flex justify-between items-center">
+  {steps.map((step, index) => {
+    const isLast = index === steps.length - 1;
+    const isCompleted = step.completed;
+    const isCurrent =
+      !isCompleted &&
+      (index === 0 || (steps[index - 1]?.completed && !step.completed));
+
+    return (
+      <ProgressStep
+        key={step.name}
+        step={step.name}
+        isCompleted={isCompleted}
+        isCurrent={isCurrent}
+        isLast={isLast}
+      />
+    );
+  })}
+</div>
+  </div>
+);
 
 const EmptyState = () => (
   <div className="flex flex-col items-center justify-center h-[calc(100vh-120px)]">
@@ -60,15 +64,67 @@ const EmptyState = () => (
 );
 
 const History = () => {
-  // Get laundry history from Redux store
-  const laundryHistory = useSelector((state) => state.laundry.history) || [];
+  const [laundryHistory, setLaundryHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const user = useSelector((state) => state.user.user.user);
+  console.log(user)
+
+  const fetchHistory = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/v1/orders/${user._id}`);
+      console.log("Fetched data:", response.data); // Log the response for debugging
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error.response?.data?.message || "Failed to fetch laundry history");
+    }
+  };
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const data = await fetchHistory();
+
+        // Ensure that data is an array
+        if (Array.isArray(data)) {
+          // ✅ Transform backend data to match the UI format
+          const transformed = data.map((order) => ({
+            laundryName: order.laundryName || "Unknown Laundry",
+            date: new Date(order.createdAt).toLocaleDateString(),
+            status: order.status,
+            steps: [
+              { name: "washing", completed: true },
+              { name: "drying", completed: order.status !== "Order Placed" },
+              { name: "folding", completed: ["Washing", "Completed"].includes(order.status) },
+              { name: "deliver", completed: order.status === "Completed" },
+            ],
+          }));
+
+          setLaundryHistory(transformed);
+        } else {
+          // Handle the case where data is not an array
+          console.error("Fetched data is not an array:", data);
+          setLaundryHistory([]);
+        }
+      } catch (err) {
+        console.error(err.message);
+        setLaundryHistory([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadHistory();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="px-4 py-6">
         <h1 className="text-xl font-semibold text-gray-900 mb-6">History</h1>
-        
-        {laundryHistory.length > 0 ? (
+
+        {loading ? (
+          <p className="text-gray-500 text-sm">Loading...</p>
+        ) : laundryHistory.length > 0 ? (
           <div className="space-y-4">
             {laundryHistory.map((item, index) => (
               <LaundryHistoryItem
@@ -84,30 +140,8 @@ const History = () => {
           <EmptyState />
         )}
       </div>
-
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-        <div className="flex justify-around items-center h-16">
-          <Link to="/" className="flex flex-col items-center">
-            <FaHome className="text-gray-400 text-xl" />
-            <span className="text-xs text-gray-400 mt-1">Home</span>
-          </Link>
-          <Link to="/chat" className="flex flex-col items-center">
-            <FaComments className="text-gray-400 text-xl" />
-            <span className="text-xs text-gray-400 mt-1">Chat</span>
-          </Link>
-          <Link to="/history" className="flex flex-col items-center">
-            <FaHistory className="text-blue-500 text-xl" />
-            <span className="text-xs text-blue-500 mt-1">History</span>
-          </Link>
-          <Link to="/profile" className="flex flex-col items-center">
-            <FaUser className="text-gray-400 text-xl" />
-            <span className="text-xs text-gray-400 mt-1">Profile</span>
-          </Link>
-        </div>
       </div>
-    </div>
   );
 };
 
-export default History; 
+export default History;

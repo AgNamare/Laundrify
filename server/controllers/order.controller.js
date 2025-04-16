@@ -21,7 +21,7 @@ export const createOrderHandler = async (req, res, next) => {
 };
 
 export const getOrdersHandler = asyncHandler(async (req, res) => {
-  const orders = await getOrdersService();
+  const orders = await getOrdersService(req.params.userId);
   res.json(orders);
 });
 

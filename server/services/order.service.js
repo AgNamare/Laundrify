@@ -4,8 +4,8 @@ export const createOrderService = async (orderData) => {
   return await Order.create(orderData);
 };
 
-export const getOrdersService = async () => {
-  return await Order.find().populate("user laundromat services.clothesType");
+export const getOrdersService = async (userId) => {
+  return await Order.find({user: userId}).populate("user laundromat services.clothesType");
 };
 
 export const getOrderService = async (orderId) => {
