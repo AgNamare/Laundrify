@@ -5,6 +5,7 @@ import {
   getOrderService,
   updateOrderService,
   deleteOrderService,
+  getUserOrdersService,
 } from "../services/order.service.js";
 
 export const createOrderHandler = async (req, res, next) => {
@@ -41,7 +42,11 @@ export const getOrdersHandler = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
-
+export const getUserOrdersHandler = asyncHandler(async (req, res) => {
+  const { userId  } = req.params;
+  const order = await getUserOrdersService(userId);
+  res.json(order);
+});
 
 export const getOrderHandler = asyncHandler(async (req, res) => {
   console.log(req.params.orderId)

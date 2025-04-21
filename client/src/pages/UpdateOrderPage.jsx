@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGetOrder, useUpdateOrder } from "../api/OrderApi";
+import { useGetUsers } from "../api/UserApi"; // Hook to get drivers
 
 const UpdateOrderPage = () => {
   const { orderId } = useParams();
 
   const { order, isLoading, isError } = useGetOrder(orderId);
   const { updateOrder, isUpdatingOrder } = useUpdateOrder();
+  const { users: drivers, isLoading: isDriversLoading } = useGetUsers("driver");
 
   const [updateData, setUpdateData] = useState({
     delivery: {
@@ -39,9 +41,10 @@ const UpdateOrderPage = () => {
     paymentStatus: "",
     paymentMethod: "",
     placedAt: "",
-    estimatedDeliveryTime: "", // <-- new field
+    estimatedDeliveryTime: "",
     createdAt: "",
     updatedAt: "",
+    driver: "", // <-- Add driver field
   });
 
   useEffect(() => {
@@ -56,9 +59,10 @@ const UpdateOrderPage = () => {
         paymentStatus: order.paymentStatus,
         paymentMethod: order.paymentMethod,
         placedAt: order.placedAt,
-        estimatedDeliveryTime: order.estimatedDeliveryTime || "", // <-- prefill if exists
+        estimatedDeliveryTime: order.estimatedDeliveryTime || "",
         createdAt: order.createdAt,
         updatedAt: order.updatedAt,
+        driver: order.driver?._id || "", // <-- Prefill if order has a driver
       });
     }
   }, [order]);
@@ -82,6 +86,13 @@ const UpdateOrderPage = () => {
     }));
   };
 
+  const handleDriverChange = (e) => {
+    setUpdateData((prev) => ({
+      ...prev,
+      driver: e.target.value,
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -90,6 +101,7 @@ const UpdateOrderPage = () => {
       estimatedDeliveryTime: updateData.estimatedDeliveryTime
         ? new Date(updateData.estimatedDeliveryTime).toISOString()
         : null,
+      driver: updateData.driver || null,
     };
 
     updateOrder({ orderId, updateData: payload });
@@ -205,6 +217,37 @@ const UpdateOrderPage = () => {
               onChange={handleInputChange}
             />
           </label>
+        </div>
+        <div>
+          <div>
+            <label>
+              Assign Driver:
+              {isDriversLoading ? (
+                <p>Loading drivers...</p>
+              ) : (
+                <>
+                  {order?.driver && (
+                    <p style={{ marginBottom: "8px" }}>
+                      <strong>Currently assigned:</strong> {order.driver.fName}{" "}
+                      {order.driver.lName} ({order.driver.phoneNumber})
+                    </p>
+                  )}
+                  <select
+                    name="driver"
+                    value={updateData.driver}
+                    onChange={handleDriverChange}
+                  >
+                    <option value="">-- Select Driver --</option>
+                    {drivers?.map((driver) => (
+                      <option key={driver._id} value={driver._id}>
+                        {driver.fName} {driver.lName} ({driver.phoneNumber})
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
+            </label>
+          </div>
         </div>
         <div>
           <button type="submit" disabled={isUpdatingOrder}>

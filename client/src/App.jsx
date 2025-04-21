@@ -3,7 +3,6 @@ import { LoadScript } from "@react-google-maps/api";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import VerifyCodePage from "./pages/VerifyCodePage.jsx";
-import LaundromatRegister from "./pages/LaundromatRegister.jsx";
 import LaundromatHomepage from "./pages/LaundromatHomepage.jsx";
 import ServiceManagementPage from "./pages/ServiceManagementPage.jsx";
 import DashboardLayout from "./layouts/DashboardLayout.jsx";
@@ -15,7 +14,6 @@ import Homepage from "./pages/Homepage.jsx";
 import Layout from "./layouts/Layout.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import History from "./pages/HistoryPage.jsx";
-import LaundryOrderPage from "./pages/LaundryOrderPage.jsx"; // ✅ Add this
 import LaundromatRegister from "./pages/LaundramatRegister.jsx";
 import LaundryOrderPage from "./pages/LaundryOrderPage.jsx";
 import OrderManagementPage from "./pages/OrderManagementPage.jsx";
@@ -46,7 +44,7 @@ function AppRoutes() {
             path="/app/laundry/:laundromatId/"
             element={<LaundryOrderPage />}
           />
-          <Route path="/app/laundry" element={<History />}></Route>
+          <Route path="/app/history" element={<History />}></Route>
           <Route
             path="/app/order/:orderId/"
             element={<OrderDetails />}
@@ -55,7 +53,6 @@ function AppRoutes() {
             path="/app/order/track/:orderId"
             element={<TrackOrder />}
           />
-          <Route path="/app/history" element={<OrderDetails />} />
         </Route>
 
         {/* Dashboard Layout */}

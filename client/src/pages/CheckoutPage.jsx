@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Mastecard from "../assets/images/Mastercard.png";
 import Mpesa from "../assets/images/Mpesa.png";
 import PaymentSuccess from "../components/PaymentSuccess";
-import { usePlaceOrder } from "@/api/OrderApi"; 
+import { usePlaceOrder } from "@/api/OrderApi";
 import EditAddressModal from "../components/EditAddressModal";
 
 // Back Button
@@ -58,8 +58,7 @@ const CheckoutPage = () => {
   const [showEditAddressModal, setShowEditAddressModal] = useState(false);
   const [editedDeliveryAddress, setEditedDeliveryAddress] = useState(null);
   const { placeOrder, isPlacingOrder } = usePlaceOrder();
-  const [orderId, setOrderId] = useState(null)
-
+  const [orderId, setOrderId] = useState(null);
 
   const orderData = useSelector((state) => state.order.order);
 
@@ -102,26 +101,26 @@ const CheckoutPage = () => {
         },
         deliveryLocation: {
           coordinates: editedDeliveryAddress?.coordinates || address.coords,
+          address: editedDeliveryAddress?.address || address.address,
         },
         deliveryStatus: "Pending",
       },
       mpesaNumber,
     };
-  
+
     try {
       const response = await placeOrder(orderDetails);
-  
+
       // ✅ This is where you get the orderId from the API response
       if (response && response._id) {
         setOrderId(response._id);
       }
-  
+
       setShowSuccess(true);
     } catch (error) {
       console.error("M-Pesa order failed:", error);
     }
   };
-  
 
   return (
     <div>
@@ -135,7 +134,12 @@ const CheckoutPage = () => {
       <div className="bg-white rounded-lg p-4 mb-4">
         <div className="space-y-2">
           <label className="flex items-center space-x-3 border-b-2 border-slate-200 pb-3">
-            <input type="radio" name="service" value="self" className="form-radio text-primary" />
+            <input
+              type="radio"
+              name="service"
+              value="self"
+              className="form-radio text-primary"
+            />
             <span>Self service</span>
           </label>
           <label className="flex items-center space-x-3">
@@ -150,7 +154,9 @@ const CheckoutPage = () => {
           </label>
           <div className="pl-7">
             <p className="text-gray-500 text-sm">
-              {editedDeliveryAddress?.address || address.address || "Address not set"}
+              {editedDeliveryAddress?.address ||
+                address.address ||
+                "Address not set"}
             </p>
           </div>
           <div className="text-right">
@@ -194,7 +200,9 @@ const CheckoutPage = () => {
             className="mt-4 space-y-4"
           >
             <div>
-              <label className="block text-sm font-medium text-gray-700">Card Number</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Card Number
+              </label>
               <input
                 type="text"
                 placeholder="Enter your card number"
@@ -207,7 +215,9 @@ const CheckoutPage = () => {
             </div>
             <div className="flex space-x-4">
               <div className="w-1/2">
-                <label className="block text-sm font-medium text-gray-700">Expiry Date</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Expiry Date
+                </label>
                 <input
                   type="text"
                   placeholder="MM/YY"
@@ -219,7 +229,9 @@ const CheckoutPage = () => {
                 />
               </div>
               <div className="w-1/2">
-                <label className="block text-sm font-medium text-gray-700">CVC</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  CVC
+                </label>
                 <input
                   type="text"
                   placeholder="CVC"
@@ -250,7 +262,9 @@ const CheckoutPage = () => {
             className="mt-4"
           >
             <div>
-              <label className="block text-sm font-medium text-gray-700">M-Pesa number</label>
+              <label className="block text-sm font-medium text-gray-700">
+                M-Pesa number
+              </label>
               <input
                 type="tel"
                 placeholder="Enter your M-Pesa number"
@@ -282,8 +296,8 @@ const CheckoutPage = () => {
       {/* Success Modal */}
       {showSuccess && (
         <PaymentSuccess
-          onDetailsOrder={()=>{
-            navigate(`/app/order/${orderId}`)
+          onDetailsOrder={() => {
+            navigate(`/app/order/${orderId}`);
           }}
           onClose={() => {
             setShowSuccess(false);

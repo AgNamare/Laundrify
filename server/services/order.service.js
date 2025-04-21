@@ -4,14 +4,22 @@ export const createOrderService = async (orderData) => {
   return await Order.create(orderData);
 };
 
-export const getOrdersService = async (filters = {}userId) => {
-  return await Order.find({user: userId}filters)
+export const getOrdersService = async (filters = {}) => {
+  return await Order.find(filters)
     .populate("user laundromat services.clothesType");
+}
+
+
+export const getUserOrdersService = async (userId) => {
+  return await Order.find({ user: userId })
+    .populate("user laundromat services.clothesType")
+    .sort({ createdAt: -1 }); // Sort by most recent
 };
 
 
+
 export const getOrderService = async (orderId) => {
-  const order = await Order.findById(orderId).populate("user laundromat services.clothesType");
+  const order = await Order.findById(orderId).populate("user laundromat services.clothesType driver");
   if (!order) {
     throw new Error("Order not found");
   }
