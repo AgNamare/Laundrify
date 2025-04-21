@@ -22,8 +22,10 @@ app.use(
     origin: ["http://localhost:5173", "https://laundrify-app.onrender.com"], // Allow all origins (change this in production)
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
+
 
 // Connect to MongoDB
 mongoose

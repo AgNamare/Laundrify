@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 router.post("/", createOrderHandler);
-router.get("/laundromat/:laundromatId", getOrdersHandler);
+router.get("/laundromat/:laundromatId:userId", getOrdersHandler);
 router.get("/:orderId", getOrderHandler);
 router.put("/:orderId", updateOrderHandler);
 router.delete("/:orderId", deleteOrderHandler);
