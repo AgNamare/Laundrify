@@ -1,77 +1,261 @@
-import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, MoreHorizontalIcon, ArchiveIcon } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import TshirtIcon from "../assets/illustrations/Clothes.svg";
+import DryingIcon from "../assets/illustrations/Drying.svg";
+import { useGetOrder } from "../api/OrderApi";
 import OrderStatusTimeline from "../components/OrderStatusTimeline";
+import {
+  GoogleMap,
+  LoadScript,
+  DirectionsService,
+  DirectionsRenderer,
+  Marker,
+  useJsApiLoader,
+} from "@react-google-maps/api";
+import { useState } from "react";
 
 const OrderDetails = () => {
-  // Mock order data array
-  const orders = [
-    {
-      shop: "Happy Laundry",
-      orderId: "#2134587843",
-      status: "washing",
-      laundryIn: "March 30, 2025 / 07:25 pm",
-      deliveryAddress: "Springfield, Gate C",
-      estimatedTime: "Finish in 2 days",
-      isPending: false,
-    },
-    {
-      shop: "Fresh Cleaners",
-      orderId: "#2134587855",
-      status: "drying",
-      laundryIn: "March 28, 2025 / 02:10 pm",
-      deliveryAddress: "Westside, Block B",
-      estimatedTime: "Finish in 1 day",
-      isPending: true,
-    },
-    {
-      shop: "QuickWash Hub",
-      orderId: "#2134587899",
-      status: "deliver",
-      laundryIn: "March 26, 2025 / 11:45 am",
-      deliveryAddress: "Downtown, Apt 21",
-      estimatedTime: "Out for delivery",
-      isPending: false,
-    },
-  ];
+  const { orderId } = useParams();
+  const { order, isLoading, isError } = useGetOrder(orderId);
+  const [directions, setDirections] = useState(null);
+  const [directionsRequested, setDirectionsRequested] = useState(false);
+  const navigate = useNavigate()
+
+  const status = order?.status?.toLowerCase();
+  const isPending = status === "pending" || order?.paymentStatus === "Pending";
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+  });
+
+  let etaMessage = "";
+  if (order?.estimatedDeliveryTime) {
+    const estimatedTime = new Date(order.estimatedDeliveryTime);
+    const now = new Date();
+    const timeDiffMs = estimatedTime - now;
+
+    if (timeDiffMs > 0) {
+      const timeDiffHours = Math.floor(timeDiffMs / (1000 * 60 * 60));
+      const timeDiffDays = Math.floor(timeDiffHours / 24);
+
+      if (timeDiffDays >= 1) {
+        etaMessage = `Arrives in ${timeDiffDays} day${
+          timeDiffDays > 1 ? "s" : ""
+        }`;
+      } else {
+        etaMessage = `Arrives in ${timeDiffHours} hour${
+          timeDiffHours > 1 ? "s" : ""
+        }`;
+      }
+    } else {
+      etaMessage = "Arriving soon";
+    }
+  }
+
+  let statusIcon = null;
+  let statusMessage = "";
+  if (status === "washing") {
+    statusIcon = (
+      <img
+        src={TshirtIcon}
+        alt="Washing"
+        className="w-32 h-32 bg-gray-100 p-4 rounded-full"
+      />
+    );
+    statusMessage =
+      "Your clothes are still being washed. They will be finished soon.";
+  } else if (status === "drying") {
+    statusIcon = (
+      <img
+        src={DryingIcon}
+        alt="Drying"
+        className="w-36 h-36 bg-gray-100 p-4 rounded-full"
+      />
+    );
+    statusMessage = "Your clothes are still in drying. Will be delivered soon.";
+  } else if (status === "folding") {
+    statusIcon = (
+      <div className="bg-gray-100 p-8 rounded-full">
+        <ArchiveIcon className="w-20 h-20 text-primary" />
+      </div>
+    );
+    statusMessage = "Your clothes are being folded. Almost ready!";
+  }
+
+  if (isLoading) return <div className="p-4">Loading order...</div>;
+  if (isError || !order)
+    return <div className="p-4 text-red-500">Failed to load order</div>;
+
+  const laundromatCoords = order?.laundromat?.location?.coordinates;
+  const deliveryCoords = order?.delivery?.deliveryLocation?.coordinates;
+
+  const showMap = status === "delivering" && laundromatCoords && deliveryCoords;
+
+  const origin = laundromatCoords
+    ? { lat: laundromatCoords[1], lng: laundromatCoords[0] }
+    : null;
+
+  const destination = deliveryCoords
+    ? { lat: deliveryCoords[1], lng: deliveryCoords[0] }
+    : null;
+
+  const laundromatIcon = {
+    url: "https://cdn-icons-png.flaticon.com/512/684/684908.png", // Blue shop pin icon
+    scaledSize: new window.google.maps.Size(40, 40),
+  };
+
+  const destinationIcon = {
+    url: "https://cdn-icons-png.flaticon.com/512/854/854878.png", // Blue home pin icon
+    scaledSize: new window.google.maps.Size(40, 40),
+  };
+
+  const mapOptions = {
+    disableDefaultUI: true, // optional: removes zoom controls, street view, etc.
+  };
 
   return (
-    <div className=" bg-gray-100 space-y-4">
+    <div>
       {/* Header */}
-      <div className="flex items-center justify-start mb-2">
+      <div className="flex items-center justify-between mb-2">
         <Link to="/orders" className="text-gray-600">
           <ArrowLeft size={24} />
         </Link>
+        <h1 className="text-2xl font-semibold capitalize">Order Details</h1>
+        <MoreHorizontalIcon />
       </div>
 
-      <h1 className="text-2xl font-semibold capitalize">History</h1>
-
-      {/* Order Cards */}
-      {orders.map((order, index) => (
-        <div key={index} className="bg-white rounded-lg p-4 space-y-4">
-          <div className="flex justify-between items-center">
-            <p className="font-semibold text-xl capitalize">{order.shop}</p>
-            {order.isPending ? (
-              <span className="px-3 py-1 bg-yellow-400 capitalize text-white rounded-full text-sm">
-                on going
-              </span>
-            ) : (
-              <span className="px-3 py-1 bg-green-400 capitalize text-white rounded-full text-sm">
-                Completed
-              </span>
-            )}
-          </div>
-
-          <div>
-            <p className="text-slate-400 opacity-95">{order.laundryIn}</p>    
-          </div>
-
-          {/* Line Break */}
-          <div className="border-t-2 border-gray-200" />
-
-          {/* Status Timeline */}
-          <OrderStatusTimeline status={order.status} />
+      {/* Status Icon */}
+      {status !== "delivering" && statusIcon && (
+        <div className="h-full w-full flex flex-col items-center px-4 py-2 rounded-full">
+          {statusIcon}
+          <h3 className="text-center p-4 text-textPrimary text-medium">
+            {statusMessage}
+          </h3>
         </div>
-      ))}
+      )}
+
+      <OrderStatusTimeline status={order.status.toLowerCase()} />
+
+      {/* Order Info */}
+      <div className="bg-white rounded-lg py-4 space-y-4 mt-4">
+        <div className="flex justify-between items-center">
+          <p className="font-semibold">{order._id}</p>
+          <span
+            className={`px-3 py-1 rounded-full text-sm text-white capitalize ${
+              isPending ? "bg-yellow-400" : "bg-green-400"
+            }`}
+          >
+            {isPending ? "On Going" : "Completed"}
+          </span>
+        </div>
+
+        <div>
+          <p className="text-slate-400 opacity-95">
+            {new Date(order.placedAt).toLocaleString()}
+          </p>
+          <p className="text-sm text-gray-600 flex justify-between">
+            Laundromat
+            <span className="font-medium">{order.laundromat?.name}</span>
+          </p>
+          <p className="text-sm text-gray-600 flex justify-between">
+            Service Type:{" "}
+            <span className="font-medium capitalize">
+              {order.serviceType || "N/A"}
+            </span>
+          </p>
+          <p className="text-sm text-gray-600 flex justify-between">
+            Total: <span className="font-medium">Ksh {order.totalPrice}</span>
+          </p>
+          <p className="text-sm text-gray-600 flex justify-between">
+            Delivery Address:{" "}
+            <span className="font-medium">
+              {order.delivery?.deliveryLocation?.address || "N/A"}
+            </span>
+          </p>
+          {etaMessage && (
+            <p className="text-sm text-gray-600 flex justify-between">
+              Estimated Time: <span className="font-medium">{etaMessage}</span>
+            </p>
+          )}
+        </div>
+
+        {/* Clothes */}
+        {order.clothes?.length > 0 && (
+          <div className="pt-4">
+            <h3 className="font-semibold text-lg">Clothes</h3>
+            <ul className="mt-2 space-y-1 text-sm text-gray-700">
+              {order.clothes.map((item, idx) => (
+                <li key={idx} className="flex justify-between">
+                  <span>{item.type}</span>
+                  <span className="font-medium">{item.quantity}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Google Map */}
+      {isLoaded && showMap && (
+        <div className="mt-6">
+          <GoogleMap
+            mapContainerStyle={{
+              height: "300px",
+              width: "100%",
+              borderRadius: "12px",
+            }}
+            center={{
+              lat: laundromatCoords[1],
+              lng: laundromatCoords[0],
+            }}
+            zoom={13}
+            options={mapOptions}
+          >
+            <Marker
+              position={origin}
+              icon={laundromatIcon} // Use the laundromatIcon without label
+            />
+            <Marker
+              position={destination}
+              icon={destinationIcon} // Use the destinationIcon without label
+            />
+
+            {!directions && (
+              <DirectionsService
+                options={{
+                  destination: {
+                    lat: deliveryCoords[0],
+                    lng: deliveryCoords[1],
+                  },
+                  origin: {
+                    lat: laundromatCoords[1],
+                    lng: laundromatCoords[0],
+                  },
+                  travelMode: "DRIVING",
+                }}
+                callback={(res) => {
+                  if (res?.status === "OK") {
+                    setDirections(res);
+                  }
+                }}
+              />
+            )}
+
+            {directions && <DirectionsRenderer directions={directions} />}
+          </GoogleMap>
+
+          <div className="text-center w-full mt-8">
+            <button
+              onClick={() => {
+                navigate(`/app/order/track/${order._id}`);
+              }}
+              className="bg-primary text-white w-full py-3 rounded-xl font-semibold shadow"
+            >
+              Track Order
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

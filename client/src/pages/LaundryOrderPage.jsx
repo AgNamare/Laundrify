@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft, MoreVertical, MapPin, LucideSprayCan } from "lucide-react";
 
+
 import { setOrderDetails } from "../redux/orderSlice";
 import { useGetLaundromatDetails } from "../api/LaundromatApi";
 import { usePlaceOrder } from "../api/OrderApi";
@@ -104,8 +105,8 @@ const LaundryOrderPage = () => {
     const orderData = {
       user: user._id, // User's ID
       laundromat: laundromat._id, // Laundromat's ID
+      serviceType: selectedService,
       services: orderedItems.map((item) => ({
-        category: selectedService, // Selected service category
         clothesType: item.id, // Clothes type ID
         quantity: item.quantity, // Quantity of clothes
         unit: item.unit, // Unit of measurement

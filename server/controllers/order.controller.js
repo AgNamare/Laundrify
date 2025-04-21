@@ -21,11 +21,30 @@ export const createOrderHandler = async (req, res, next) => {
 };
 
 export const getOrdersHandler = asyncHandler(async (req, res) => {
-  const orders = await getOrdersService();
+  const { laundromatId } = req.params;  // Capture laundromatId from URL parameters
+  const { status, service, user, startDate, endDate } = req.query;
+
+  const filters = { laundromat: laundromatId };  // Set laundromatId as a filter
+
+  if (status) filters.status = status;
+  if (user) filters.user = user;
+  if (service) filters.serviceType = service;
+
+  // Timeframe filter
+  if (startDate || endDate) {
+    filters.placedAt = {};
+    if (startDate) filters.placedAt.$gte = new Date(startDate);
+    if (endDate) filters.placedAt.$lte = new Date(endDate);
+  }
+
+  const orders = await getOrdersService(filters);
   res.json(orders);
 });
 
+
+
 export const getOrderHandler = asyncHandler(async (req, res) => {
+  console.log(req.params.orderId)
   const order = await getOrderService(req.params.orderId);
   res.json(order);
 });

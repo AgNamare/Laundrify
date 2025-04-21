@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useLaundromatRegistration } from "../api/AuthApi";
 import LaundromatForm from "../forms/LaundramatForm";
 
-const LaundromatPage = () => {
+const LaundromatRegister = () => {
   const { registerLaundromat, isRegistering } = useLaundromatRegistration();
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,4 +54,4 @@ const LaundromatPage = () => {
   );
 };
 
-export default LaundromatPage;
+export default LaundromatRegister;

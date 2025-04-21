@@ -3,7 +3,6 @@ import { LoadScript } from "@react-google-maps/api";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import VerifyCodePage from "./pages/VerifyCodePage.jsx";
-import LaundromatRegister from "./pages/LaundromatRegister.jsx";
 import LaundromatHomepage from "./pages/LaundromatHomepage.jsx";
 import ServiceManagementPage from "./pages/ServiceManagementPage.jsx";
 import DashboardLayout from "./layouts/DashboardLayout.jsx";
@@ -14,6 +13,11 @@ import OrderStatusTimeline from "./components/OrderStatusTimeline.jsx";
 import Homepage from "./pages/Homepage.jsx";
 import Layout from "./layouts/Layout.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
+import LaundromatRegister from "./pages/LaundramatRegister.jsx";
+import LaundryOrderPage from "./pages/LaundryOrderPage.jsx";
+import OrderManagementPage from "./pages/OrderManagementPage.jsx";
+import UpdateOrderPage from "./pages/UpdateOrderPage.jsx";
+import TrackOrder from "./pages/TrackOrder.jsx";
 
 const libraries = ["places"];
 
@@ -26,7 +30,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register-laundromat" element={<LaundramatRegister />} />
+        <Route path="/register-laundromat" element={<LaundromatRegister />} />
         <Route path="/verify" element={<VerifyCodePage />} />
 
         <Route path="/app" element={<Layout />}>
@@ -35,6 +39,14 @@ function AppRoutes() {
           <Route
             path="/app/laundry/:laundromatId/"
             element={<LaundryOrderPage />}
+          />
+          <Route
+            path="/app/order/:orderId/"
+            element={<OrderDetails />}
+          />
+          <Route
+            path="/app/order/track/:orderId"
+            element={<TrackOrder />}
           />
           <Route path="/app/history" element={<OrderDetails />} />
         </Route>
@@ -50,6 +62,14 @@ function AppRoutes() {
           <Route
             path="/laundromat/:laundromatId/services/add"
             element={<AddNewServicePage />}
+          />
+          <Route
+            path="/laundromat/:laundromatId/orders"
+            element={<OrderManagementPage />}
+          />
+          <Route
+            path="/laundromat/:laundromatId/orders/:orderId"
+            element={<UpdateOrderPage />}
           />
           <Route
             path="/laundromat/:laundromatId/services/:category"

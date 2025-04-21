@@ -7,14 +7,22 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    driver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
     laundromat: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Laundromat",
       required: true,
     },
+    serviceType: {
+      type: String,
+      required: true,
+    },
     services: [
       {
-        category: { type: String, required: true },
         clothesType: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "ClothesType",
@@ -28,7 +36,14 @@ const orderSchema = new mongoose.Schema(
     totalPrice: { type: Number, required: true },
     status: {
       type: String,
-      enum: ["Pending", "Processing", "Ready for Pickup", "Out for Delivery", "Completed", "Cancelled"],
+      enum: [
+        "Pending",
+        "Washing",
+        "Drying",
+        "Folding",
+        "Delivering",
+        "Cancelled",
+      ],
       default: "Pending",
     },
     paymentStatus: {
@@ -38,7 +53,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["M-Pesa", "Credit Card"]
+      enum: ["M-Pesa", "Credit Card"],
     },
     delivery: {
       pickupLocation: {
@@ -55,13 +70,18 @@ const orderSchema = new mongoose.Schema(
           enum: ["Point"],
           default: "Point",
         },
-        coordinates: { type: [Number]},
+        coordinates: { type: [Number] },
+        address: { type: String }, 
       },
       deliveryStatus: {
         type: String,
         enum: ["Pending", "On the Way", "Delivered", "Cancelled"],
         default: "Pending",
       },
+    },
+    estimatedDeliveryTime: {
+      type: Date,
+      required: false,
     },
     placedAt: { type: Date, default: Date.now },
   },

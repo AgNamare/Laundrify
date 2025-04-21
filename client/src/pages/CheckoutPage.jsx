@@ -58,6 +58,7 @@ const CheckoutPage = () => {
   const [showEditAddressModal, setShowEditAddressModal] = useState(false);
   const [editedDeliveryAddress, setEditedDeliveryAddress] = useState(null);
   const { placeOrder, isPlacingOrder } = usePlaceOrder();
+  const [orderId, setOrderId] = useState(null)
 
 
   const orderData = useSelector((state) => state.order.order);
@@ -78,6 +79,7 @@ const CheckoutPage = () => {
         },
         deliveryLocation: {
           coordinates: editedDeliveryAddress?.coordinates || address.coords,
+          address: editedDeliveryAddress?.address || address.address,
         },
         deliveryStatus: "Pending",
       },
@@ -105,14 +107,21 @@ const CheckoutPage = () => {
       },
       mpesaNumber,
     };
-
+  
     try {
-      await placeOrder(orderDetails);
+      const response = await placeOrder(orderDetails);
+  
+      // ✅ This is where you get the orderId from the API response
+      if (response && response._id) {
+        setOrderId(response._id);
+      }
+  
       setShowSuccess(true);
     } catch (error) {
       console.error("M-Pesa order failed:", error);
     }
   };
+  
 
   return (
     <div>
@@ -273,6 +282,9 @@ const CheckoutPage = () => {
       {/* Success Modal */}
       {showSuccess && (
         <PaymentSuccess
+          onDetailsOrder={()=>{
+            navigate(`/app/order/${orderId}`)
+          }}
           onClose={() => {
             setShowSuccess(false);
             navigate("/");

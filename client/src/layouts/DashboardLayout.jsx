@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Home, Package } from "lucide-react";
+import { Home, Package, ShoppingBag } from "lucide-react";
 import logo from "../assets/images/logo.png";
 
 const DashboardLayout = () => {
@@ -59,13 +59,37 @@ const DashboardLayout = () => {
                 Services
               </Link>
             </li>
+
+            {/* Orders */}
+            <li className="mb-6">
+              <Link
+                to={`/laundromat/${laundromatId}/orders`}
+                className={`flex items-center gap-2 px-3 py-1 ${
+                  location.pathname === `/laundromat/${laundromatId}/orders`
+                    ? "text-white border-l-4 border-primary"
+                    : "text-slate-400"
+                }`}
+              >
+                <ShoppingBag
+                  size={20}
+                  className={
+                    location.pathname === `/laundromat/${laundromatId}/orders`
+                      ? "text-primary"
+                      : "text-slate-400"
+                  }
+                />
+                Orders
+              </Link>
+            </li>
           </ul>
         </div>
 
         {/* User Greeting at Bottom */}
         <div className=" text-white mt-auto p-4">
           <p className="text-sm">
-            <span className="">{user?.fName } {user?.lName}</span>
+            <span className="">
+              {user?.fName} {user?.lName}
+            </span>
           </p>
         </div>
       </aside>
