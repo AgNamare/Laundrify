@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft, MoreVertical, MapPin, LucideSprayCan } from "lucide-react";
+import Machine from "../assets/illustrations/machine.svg";
 
 
 import { setOrderDetails } from "../redux/orderSlice";
@@ -208,7 +209,7 @@ const LaundryOrderPage = () => {
         <div className="bg-white rounded-lg p-4 mb-6 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="bg-gray-100 p-1 w-10 h-10 rounded-full flex items-center justify-center">
-              <LucideSprayCan size={24} className="text-primary scale-x-[-1]" />
+              <img src={Machine} alt="Machine" className="w-8 h-8" />
             </div>
             <div className="text-sm">
               <span className="text-xs text-gray-500">Total items</span>

@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react"; // 👈 Import the relevant icon
+import IronBox from "../assets/illustrations/IronBox.svg"
 
 const OptionalServices = ({ options, onToggle }) => {
   return (
@@ -9,7 +9,7 @@ const OptionalServices = ({ options, onToggle }) => {
           <label key={opt.category} className="flex capitalize items-center gap-2">
             <div className="flex items-center gap-2">
               {opt.category.toLowerCase() === "ironing" && (
-                <Sparkles size={18} className="text-primary" />
+                <img src={IronBox} className="h-8 w-6" alt="Iron Box" />
               )}
               <span className="text-sm">
                 {opt.category} (+{opt.priceIncreasePercentage || 0}%)

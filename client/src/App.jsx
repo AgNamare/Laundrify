@@ -19,6 +19,8 @@ import LaundryOrderPage from "./pages/LaundryOrderPage.jsx";
 import OrderManagementPage from "./pages/OrderManagementPage.jsx";
 import UpdateOrderPage from "./pages/UpdateOrderPage.jsx";
 import TrackOrder from "./pages/TrackOrder.jsx";
+import ChatListPage from "./pages/ChatListPage.jsx";
+import ChatPage from "./pages/ChatPage.jsx";
 
 const libraries = ["places"];
 
@@ -45,6 +47,8 @@ function AppRoutes() {
             element={<LaundryOrderPage />}
           />
           <Route path="/app/history" element={<History />}></Route>
+          <Route path="/app/chat" element={<ChatListPage />}></Route>
+          <Route path="/app/chat/:laundromatId" element={<ChatPage />}></Route>
           <Route
             path="/app/order/:orderId/"
             element={<OrderDetails />}

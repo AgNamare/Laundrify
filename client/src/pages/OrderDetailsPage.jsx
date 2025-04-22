@@ -1,4 +1,9 @@
-import { ArrowLeft, MoreHorizontalIcon, ArchiveIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  MoreHorizontalIcon,
+  ArchiveIcon,
+  MessageCircle,
+} from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import TshirtIcon from "../assets/illustrations/Clothes.svg";
 import DryingIcon from "../assets/illustrations/Drying.svg";
@@ -19,7 +24,7 @@ const OrderDetails = () => {
   const { order, isLoading, isError } = useGetOrder(orderId);
   const [directions, setDirections] = useState(null);
   const [directionsRequested, setDirectionsRequested] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const status = order?.status?.toLowerCase();
   const isPending = status === "pending" || order?.paymentStatus === "Pending";
@@ -153,10 +158,22 @@ const OrderDetails = () => {
           <p className="text-slate-400 opacity-95">
             {new Date(order.placedAt).toLocaleString()}
           </p>
-          <p className="text-sm text-gray-600 flex justify-between">
+          <p className="text-sm text-gray-600 flex justify-between items-center">
             Laundromat
-            <span className="font-medium">{order.laundromat?.name}</span>
+            <span className="font-medium flex items-center gap-2">
+              {order.laundromat?.name}
+              <button
+                onClick={() =>
+                  navigate(`/app/chat/${order.laundromat?._id}`)
+                }
+                className="text-primary hover:text-primary/80"
+                title="Chat with Laundromat"
+              >
+                <MessageCircle size={20} />
+              </button>
+            </span>
           </p>
+
           <p className="text-sm text-gray-600 flex justify-between">
             Service Type:{" "}
             <span className="font-medium capitalize">

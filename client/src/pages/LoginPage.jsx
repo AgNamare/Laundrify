@@ -20,7 +20,7 @@ const LoginPage = () => {
         localStorage.setItem("admin", JSON.stringify(userData));
         navigate("/register-laundromat");
       } else {
-        navigate("/");
+        navigate("/app");
       }
     } catch (error) {
       console.error("Login failed:", error);

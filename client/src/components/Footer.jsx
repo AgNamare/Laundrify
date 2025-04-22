@@ -3,7 +3,7 @@ import { Home, MessageSquare, Clock, User } from "lucide-react";
 
 const navItems = [
   { name: "Home", path: "/app", icon: Home },
-  { name: "Chat", path: "/chat", icon: MessageSquare },
+  { name: "Chat", path: "/app/chat", icon: MessageSquare },
   { name: "History", path: "/app/history", icon: Clock },
   { name: "Profile", path: "/profile", icon: User },
 ];
