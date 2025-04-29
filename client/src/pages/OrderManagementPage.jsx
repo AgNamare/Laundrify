@@ -34,28 +34,44 @@ const OrderManagementPage = () => {
     }));
   };
 
-  if (isLoading) return <p>Loading orders...</p>;
-  if (isError) return <p>Error: {error?.message || "Something went wrong"}</p>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-gray-600 text-lg">Loading orders...</p>
+      </div>
+    );
+  if (isError)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-red-500 text-lg">
+          Error: {error?.message || "Something went wrong"}
+        </p>
+      </div>
+    );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Order Management</h1>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">
+        Order Management
+      </h1>
 
-      <div className="filters mb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Filters */}
+      <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">Filters</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <input
             type="text"
             name="user"
             value={filters.user}
             onChange={handleFilterChange}
             placeholder="Filter by User"
-            className="border p-2 rounded"
+            className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <select
             name="service"
             value={filters.service}
             onChange={handleFilterChange}
-            className="border p-2 rounded"
+            className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="">All Services</option>
             <option value="Wash & Fold">Wash & Fold</option>
@@ -65,7 +81,7 @@ const OrderManagementPage = () => {
             name="status"
             value={filters.status}
             onChange={handleFilterChange}
-            className="border p-2 rounded"
+            className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="">All Statuses</option>
             <option value="Pending">Pending</option>
@@ -84,7 +100,7 @@ const OrderManagementPage = () => {
                 : ""
             }
             onChange={handleDateChange}
-            className="border p-2 rounded"
+            className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <input
             type="date"
@@ -95,54 +111,62 @@ const OrderManagementPage = () => {
                 : ""
             }
             onChange={handleDateChange}
-            className="border p-2 rounded"
+            className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
       </div>
 
-      <table className="table-auto w-full border-collapse border border-gray-200">
-        <thead>
-          <tr>
-            <th className="border p-2">Order ID</th>
-            <th className="border p-2">User</th>
-            <th className="border p-2">Status</th>
-            <th className="border p-2">Total Price</th>
-            <th className="border p-2">Placed At</th>
-            <th className="border p-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders && orders.length > 0 ? (
-            orders.map((order) => (
-              <tr key={order._id}>
-                <td className="border p-2">{order._id}</td>
-                <td className="border p-2">
-                  {order.user.fName} {order.user.lName}
-                </td>
-                <td className="border p-2">{order.status}</td>
-                <td className="border p-2">Ksh {order.totalPrice}</td>
-                <td className="border p-2">
-                  {format(new Date(order.placedAt), "yyyy-MM-dd HH:mm")}
-                </td>
-                <td className="border p-2">
-                  <Link
-                    to={`/laundromat/${laundromatId}/orders/${order._id}`}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                  >
-                    View Details
-                  </Link>
+      {/* Orders Table */}
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Order ID</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total Price</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Placed At</th>
+              <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders && orders.length > 0 ? (
+              orders.map((order) => (
+                <tr key={order._id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 border-t text-gray-600">{order._id}</td>
+                  <td className="px-6 py-4 border-t text-gray-600">
+                    {order.user.fName} {order.user.lName}
+                  </td>
+                  <td className="px-6 py-4 border-t text-gray-600">{order.status}</td>
+                  <td className="px-6 py-4 border-t text-gray-600">
+                    Ksh {order.totalPrice.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 border-t text-gray-600">
+                    {format(new Date(order.placedAt), "yyyy-MM-dd HH:mm")}
+                  </td>
+                  <td className="px-6 py-4 border-t text-center">
+                    <Link
+                      to={`/laundromat/${laundromatId}/orders/${order._id}`}
+                      className="inline-block bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-md transition duration-200"
+                    >
+                      View Details
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="6"
+                  className="text-center px-6 py-8 text-gray-500 text-sm border-t"
+                >
+                  No orders found.
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className="border p-2 text-center">
-                No orders found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

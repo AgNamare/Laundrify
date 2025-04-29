@@ -56,15 +56,15 @@ const ChatListPage = () => {
 
       <h3 className="text-sm text-gray-500 mb-2">All Messages</h3>
       {filteredChats?.map((chat) => (
-        <ChatItem key={chat._id} chat={chat} />
+        <ChatItem key={chat._id} chat={chat} user={user} />
       ))}
     </div>
   );
 };
 
-const ChatItem = ({ chat }) => {
+const ChatItem = ({ chat, user }) => {
   console.log("Chat Item: ", chat); // Log the chat item
-  const otherUser = chat.participants[1];
+  const otherUser = chat.participants.find(p => p._id !== user?._id);
   const latestMsg = chat.latestMessage;
 
   const formattedTime = latestMsg?.createdAt
@@ -76,7 +76,7 @@ const ChatItem = ({ chat }) => {
 
   return (
     <Link
-      to={`/app/chat/${chat.laundromat._id}`}
+      to={`/app/chat/${chat._id}`}
       className="flex items-center justify-between gap-4 py-3 px-2 hover:bg-gray-100 rounded-xl cursor-pointer"
     >
       <div className="flex items-center gap-4">

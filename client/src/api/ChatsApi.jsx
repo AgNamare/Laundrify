@@ -20,29 +20,51 @@ export const useChats = (userId) => {
 };
 
 
-const fetchChat = async (chatId) => {
-  const res = await axios.get(`/api/v1/message/${chatId}`); // assuming this endpoint returns a single chat'
-  console.log("Response: ",res.data)
+const fetchChatWithLaundromat = async (laundromatId) => {
+  const res = await axios.post(`/api/v1/chats/laundromat`, {
+    laundromatId,
+  });
+  console.log("Response: ", res.data);
   return res.data;
 };
 
-export const useChat = (chatId) => {
-  return useQuery(["chat", chatId], () => fetchChat(chatId), {
-    enabled: !!chatId,
-    staleTime: 1000 * 60,
-    refetchOnWindowFocus: true,
-    retry: 1,
-  });
+export const useChatWithLaundromat = (laundromatId) => {
+  return useQuery(
+    ["chat-with-laundromat", laundromatId],
+    () => fetchChatWithLaundromat(laundromatId),
+    {
+      enabled: !!laundromatId ,
+      staleTime: 1000 * 60, // 1 minute
+      refetchOnWindowFocus: true,
+      retry: 1,
+    }
+  );
 };
 
-export const useChatWithLaundromat = (laundromatId) => {
-  return useQuery(["chat-with-laundromat", laundromatId], async () => {
-    const { data } = await axios.post("/api/v1/chats/laundromat", {
-      laundromatId,
-    });
-    return data;
+const fetchChat = async ({ senderId, receiverId, laundromatId }) => {
+  const res = await axios.post(`/api/v1/chats/laundromat`, {
+    senderId,
+    receiverId,
+    laundromatId,
   });
+  console.log("Response: ", res.data);
+  return res.data;
 };
+
+export const useChat = ({ senderId, receiverId, laundromatId }) => {
+  return useQuery(
+    ["chat", senderId, receiverId, laundromatId],
+    () => fetchChat({ senderId, receiverId, laundromatId }),
+    {
+      enabled: !!senderId && !!receiverId && !!laundromatId,
+      staleTime: 1000 * 60, // 1 minute
+      refetchOnWindowFocus: true,
+      retry: 1,
+    }
+  );
+};
+
+
 
 const fetchMessages = async (chatId) => {
   const res = await axios.get(`/api/v1/messages/${chatId}`); // Assuming endpoint returns messages for a given chat
@@ -81,3 +103,21 @@ export const useSendMessage = () => {
   return { sendMessage, isLoading };
 };
 
+
+const getChat = async (chatId) => {
+  const res = await axios.get(`/api/v1/chats/get/${chatId}`);
+  return res.data;
+};
+
+export const useGetChat = (chatId) => {
+  return useQuery(
+    ["chat", chatId],
+    () => getChat(chatId),
+    {
+      enabled: !!chatId,
+      staleTime: 1000 * 60, // 1 minute
+      refetchOnWindowFocus: true,
+      retry: 1,
+    }
+  );
+};

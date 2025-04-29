@@ -1,28 +1,26 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
-import {
-  useChatWithLaundromat,
-  useMessages,
-  useSendMessage,
-} from "../api/ChatsApi";
+import { useMessages, useSendMessage, useGetChat } from "../api/ChatsApi";
 import { io } from "socket.io-client";
 import { Send } from "lucide-react";
 
 const ChatPage = () => {
-  const { laundromatId } = useParams();
+  const { chatId } = useParams();
   const user = useSelector((state) => state.user?.user?.user);
 
   const {
     data: chat,
     isLoading: isChatLoading,
     isError: isChatError,
-  } = useChatWithLaundromat(laundromatId);
+  } = useGetChat(chatId);
+
   const {
     data: messages,
     isLoading: isMessagesLoading,
     isError: isMessagesError,
-  } = useMessages(chat?._id);
+  } = useMessages(chatId);
+
   const { sendMessage, isLoading: isSending } = useSendMessage();
 
   const [messageContent, setMessageContent] = useState("");
@@ -30,6 +28,7 @@ const ChatPage = () => {
   const [socket, setSocket] = useState(null);
   const scrollRef = useRef(null);
 
+  // Socket connection
   useEffect(() => {
     const socketInstance = io("http://localhost:5000", {
       withCredentials: true,
@@ -37,8 +36,8 @@ const ChatPage = () => {
 
     setSocket(socketInstance);
 
-    if (chat) {
-      socketInstance.emit("join_chat", chat._id);
+    if (chatId) {
+      socketInstance.emit("join_chat", chatId);
     }
 
     socketInstance.on("receive_message", (newMessage) => {
@@ -48,14 +47,16 @@ const ChatPage = () => {
     return () => {
       socketInstance.disconnect();
     };
-  }, [chat]);
+  }, [chatId]);
 
+  // Populate local messages
   useEffect(() => {
     if (messages) {
       setLocalMessages(messages);
     }
   }, [messages]);
 
+  // Auto-scroll
   useEffect(() => {
     const scrollToBottom = () => {
       if (scrollRef.current) {
@@ -69,38 +70,31 @@ const ChatPage = () => {
 
   const handleSendMessage = async () => {
     if (!messageContent.trim()) return;
-
+  
     try {
       const message = {
-        chatId: chat._id,
+        chatId,
         senderId: user._id,
         content: messageContent,
       };
-
-      const sentMessage = await sendMessage(message);
+  
+      await sendMessage(message); // Just send to backend (optional if needed)
       setMessageContent("");
-
-      setLocalMessages((prev) => [
-        ...prev,
-        {
-          ...sentMessage,
-          sender: { _id: user._id },
-          createdAt: new Date().toISOString(),
-        },
-      ]);
-
-      socket.emit("send_message", message);
+  
+      socket.emit("send_message", message); // The UI will update when the server sends back 'receive_message'
+  
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
+  
 
   if (isChatLoading || isMessagesLoading) {
     return <p className="p-4">Loading chat...</p>;
   }
 
   if (isChatError || isMessagesError) {
-    return <p className="p-4 text-red-500">Failed to load chat.</p>;
+    return <p className="p-4 text-red-500">Failed to load chat or messages.</p>;
   }
 
   if (!chat || !user) {
@@ -178,12 +172,13 @@ const ChatPage = () => {
               if (e.key === "Enter") handleSendMessage();
             }}
           />
-          <button
-            className=""
-            onClick={handleSendMessage}
-            disabled={isSending}
-          >
-            <Send size={26} className={isSending ? "text-textSecondary rotate-45" : "text-primary rotate-45"} />
+          <button onClick={handleSendMessage} disabled={isSending}>
+            <Send
+              size={26}
+              className={
+                isSending ? "text-textSecondary rotate-45" : "text-primary rotate-45"
+              }
+            />
           </button>
         </div>
       </div>

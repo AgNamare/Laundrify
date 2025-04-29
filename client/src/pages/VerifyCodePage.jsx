@@ -38,7 +38,7 @@ const VerifyCodePage = () => {
       });
 
       if (response.success) {
-        navigate("/dashboard"); // Redirect on success
+        navigate("/app"); // Redirect on success
       }
     } catch (error) {
       console.error("Verification failed:", error);

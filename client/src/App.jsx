@@ -48,15 +48,9 @@ function AppRoutes() {
           />
           <Route path="/app/history" element={<History />}></Route>
           <Route path="/app/chat" element={<ChatListPage />}></Route>
-          <Route path="/app/chat/:laundromatId" element={<ChatPage />}></Route>
-          <Route
-            path="/app/order/:orderId/"
-            element={<OrderDetails />}
-          />
-          <Route
-            path="/app/order/track/:orderId"
-            element={<TrackOrder />}
-          />
+          <Route path="/app/chat/:chatId" element={<ChatPage />}></Route>
+          <Route path="/app/order/:orderId/" element={<OrderDetails />} />
+          <Route path="/app/order/track/:orderId" element={<TrackOrder />} />
         </Route>
 
         {/* Dashboard Layout */}
@@ -74,6 +68,11 @@ function AppRoutes() {
             path="/laundromat/:laundromatId/orders"
             element={<OrderManagementPage />}
           />
+          <Route
+            path="/laundromat/chat/:laundromatId"
+            element={<ChatPage />}
+          ></Route>
+          <Route path="/laundromat/chats" element={<ChatListPage />} />
           <Route
             path="/laundromat/:laundromatId/orders/:orderId"
             element={<UpdateOrderPage />}

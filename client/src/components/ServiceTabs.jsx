@@ -1,6 +1,6 @@
 const ServiceTabs = ({ services, selectedService, onSelect }) => {
   return (
-    <div className="flex overflow-x-auto gap-2 mb-4">
+    <div className="flex justify-between overflow-x-auto gap-2 mb-4">
       {services.map((service) => (
         <button
           key={service.category}

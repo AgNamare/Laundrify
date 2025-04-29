@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createOrGetChat,
+  getChat,
   getUserChats,
   getUserChatsController,
 } from "../controllers/chat.controllers.js";
@@ -11,6 +12,7 @@ import Laundromat from "../models/laundromat.model.js";
 const router = express.Router();
 
 router.post("/", createOrGetChat); // Create a chat or get existing between user & laundromat
+router.get("/get/:chatId", getChat); // Create a chat or get existing between user & laundromat
 router.get("/", getUserChatsController); // Create a chat or get existing between user & laundromat
 router.get("/:userId", getUserChats); // Get all chats for a user
 router.post("/laundromat", protect, async (req, res) => {
