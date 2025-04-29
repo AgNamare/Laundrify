@@ -40,7 +40,7 @@ function AppRoutes() {
         {/* <Route path="/register-laundromat" element={<LaundromatRegister />} /> */}
 
         <Route path="/app" element={<Layout />}>
-          <Route path="/app" element={<LaundromatHomepage />} />
+          <Route index element={<LaundromatHomepage />} />
           <Route path="/app/checkout" element={<CheckoutPage />} />
           <Route
             path="/app/laundry/:laundromatId/"
