@@ -1,9 +1,9 @@
-name: Deploy to Render
+name: Deploy to Render on Push
 
 on:
   push:
     branches:
-      - development  # Change to the branch you want to deploy
+      - development  # Change to the branch you want to trigger deployments from
 
 jobs:
   deploy:
@@ -13,18 +13,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Deploy Backend to Render
+      - name: Trigger Render Deploy (Automatic on Push)
         run: |
-          curl -X POST "https://api.render.com/v1/services/srv-cvlqsl3e5dus73apn2i0/deploys" \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Accept: application/json" \
-          -H "Content-Type: application/json" \
-          --data '{}'
-          
-      - name: Deploy Frontend to Render
-        run: |
-          curl -X POST "https://api.render.com/v1/services/srv-cvmksj7diees73c1e2m0/deploys" \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Accept: application/json" \
-          -H "Content-Type: application/json" \
-          --data '{}'
+          echo "Pushing changes to trigger automatic Render deployment..."
+          # No direct API call needed here. Render will automatically deploy
+          # when it detects changes on the connected repository and branch.
+          echo "Make sure your Render services are connected to this repository"
+          echo "and set to automatically deploy on pushes to the 'development' branch."
