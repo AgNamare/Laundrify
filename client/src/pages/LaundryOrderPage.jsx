@@ -163,7 +163,7 @@ const LaundryOrderPage = () => {
           <img
             className="h-40 w-full rounded-lg object-cover"
             src={
-              laundromat?.imageUrl ||
+              laundromat?.image ||
               "https://cdn.thewirecutter.com/wp-content/media/2022/05/washing-machine-2048px-8670.jpg"
             }
             alt="Laundromat"

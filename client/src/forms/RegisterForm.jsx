@@ -16,7 +16,7 @@ const formSchema = z
     email: z.string().email("Enter a valid email address."),
     password: z.string().min(8, "Password must be at least 8 characters."),
     confirmPassword: z.string().min(8, "Confirm password must match."),
-    role: z.enum(["user", "laundromat_admin"], {
+    role: z.enum(["user", "admin"], {
       errorMap: () => {
         return { message: "Please select a valid role." };
       },
@@ -179,7 +179,7 @@ const RegisterForm = ({ onSave, isLoading }) => {
             } focus:outline-none`}
           >
             <option value="user">User</option>
-            <option value="laundromat_admin">Laundromat Admin</option>
+            <option value="admin">Laundromat Admin</option>
           </select>
           {errors.role && (
             <p className="text-red-500 text-sm">{errors.role.message}</p>

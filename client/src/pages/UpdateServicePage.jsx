@@ -8,6 +8,7 @@ import { Plus } from "lucide-react";
 
 const UpdateServicePage = () => {
   const { laundromatId, category } = useParams();
+  console.log(laundromatId, category);
   const { service, isLoadingService, refetch } = useGetServiceByCategory(
     laundromatId,
     category
@@ -56,7 +57,7 @@ const UpdateServicePage = () => {
         <h1 className="text-lg font-medium ">Service Management</h1>
         <div className="hover:cursor-pointer">
           <Link
-            to={`/laundromat/{laundromatId}/services/add`}
+            to={`/laundromat/${laundromatId}/services/add`}
             className=" flex gap-1 justify-center items-center bg-primary text-white px-2 py-1 rounded-full"
           >
             <button>Add New Service</button>

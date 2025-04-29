@@ -30,7 +30,7 @@ const ChatPage = () => {
 
   // Socket connection
   useEffect(() => {
-    const socketInstance = io("http://localhost:5000", {
+    const socketInstance = io("https://laundrify.onrender.com", {
       withCredentials: true,
     });
 

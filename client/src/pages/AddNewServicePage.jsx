@@ -8,9 +8,9 @@ import { useSelector } from "react-redux";
 const AddNewServicePage = () => {
   const { clothesTypes, isLoading: isLoadingTypes } = useGetClothesTypes();
   const { addService, isAdding } = useAddService();
-  const user = useSelector((state) => state.user?.user?.user);
+  const user = useSelector((state) => state.user?.user);
   console.log(user)
-  const laundromatId = user.laundromat
+  const laundromatId = user.laundromat || user.user.laundromat
   console.log(laundromatId)
 
   const handleSave = async (formData) => {

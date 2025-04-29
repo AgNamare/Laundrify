@@ -1,14 +1,18 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLaundromatRegistration } from "../api/AuthApi";
 import LaundromatForm from "../forms/LaundramatForm";
+import { setUserDetails } from "../redux/userSlice";
+import { toast } from "sonner";
 
 const LaundromatRegister = () => {
   const { registerLaundromat, isRegistering } = useLaundromatRegistration();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
   const user = useSelector((state) => state.user?.user?.user);
+  console.log(user);
 
   const handleLaundromatRegister = async (data) => {
     try {
@@ -33,9 +37,15 @@ const LaundromatRegister = () => {
 
       console.log("Laundromat registration attempt with data:", payload);
 
-      const newLaundromat = await registerLaundromat(payload);
+      const response = await registerLaundromat(payload);
+      const { newLaundromat, adminUser } = response;
+
+      dispatch(setUserDetails(adminUser)); // Save user in state
+      console.log("Laundromat registration response:", newLaundromat);
       localStorage.setItem("laundromat", JSON.stringify(newLaundromat));
-      navigate("/laundromats"); // Redirect to the laundromat list or confirmation page
+      navigate("/laundromat/dashboard");
+
+      toast.success("Laundromat created successfully!");
 
       alert("Laundromat created successfully!");
     } catch (error) {

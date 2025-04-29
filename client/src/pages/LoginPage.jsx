@@ -13,6 +13,7 @@ const LoginPage = () => {
   const handleLogin = async (data) => {
     try {
       const userData = await login(data);
+      console.log("Login response:", userData);
       dispatch(setUserDetails(userData)); // Save user in state
 
       // Check the user's role and navigate accordingly

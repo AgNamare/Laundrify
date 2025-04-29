@@ -9,71 +9,49 @@ import jwt from "jsonwebtoken";
 import Laundromat from "../models/laundromat.model.js";
 
 export const createUserService = async (userData) => {
-  const { password, email, ...rest } = userData;
-
-  // Start a session for the transaction
   const session = await mongoose.startSession();
-  session.startTransaction();
 
   try {
-    console.log("Checking if user already exists in User collection");
-    const existingUser = await User.findOne({ email }).session(session);
+    let newUser;
 
-    if (existingUser) {
-      if (!existingUser.isVerified) {
-        console.log("User already registered. Please enter verification code.");
-        const err = new Error(
-          "User already registered. Please enter verification code."
-        );
-        err.statusCode = 400;
-        throw err;
+    // Start the transaction
+    await session.withTransaction(async () => {
+      const existingUser = await User.findOne({ email: userData.email }).session(session);
+      if (existingUser) {
+        throw new Error("User already exists");
       }
-      console.log("User already exists. Please login.");
-      const err = new Error("User already exists. Please login.");
-      err.statusCode = 409;
-      throw err;
-    }
 
-    console.log("Hashing password and generating verification code");
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    const verificationCode = generateVerificationCode();
+      // Generate a verification code
+      const verificationCode = generateVerificationCode();
 
-    console.log("Creating new user with isVerified: false");
-    const newUser = new User({
-      ...rest,
-      email,
-      password: hashedPassword,
-      isVerified: false,
-      verificationCode, // Store code temporarily
+      // Create a new user
+      newUser = new User({
+        ...userData,
+        password: bcrypt.hashSync(userData.password, 10),
+        verificationCode, // Store the verification code
+        isVerified: false,
+      });
+
+      // Save the user within the transaction
+      await newUser.save({ session });
+
+      // Send the verification code to user's email (outside the transaction)
+      await sendVerificationCode(newUser.email, verificationCode);
     });
 
-    await newUser.save({ session });
+    console.log("✅ Created and verification email sent:", newUser);
 
-    console.log("Sending verification code to user's email");
-    try {
-      await sendVerificationCode(newUser.email, verificationCode);
-      await session.commitTransaction();
-    } catch (error) {
-      console.log("Error sending verification code:", error.message);
-      await session.abortTransaction();
-      throw error;
-    }
-
-    session.endSession();
-
-    const {
-      password: pass,
-      verificationCode: code,
-      ...userWithoutSensitiveData
-    } = newUser.toObject();
-    return userWithoutSensitiveData;
+    return newUser;
   } catch (error) {
-    console.log("Error creating user:", error.message);
-    await session.abortTransaction();
-    session.endSession();
+    console.error("❌ Transaction failed:", error.message);
     throw error;
+  } finally {
+    session.endSession();
   }
 };
+
+
+
 
 // Function to verify user with code
 export const verifyUserService = async (email, code) => {
@@ -148,13 +126,17 @@ const generateToken = (userId) => {
 export const createLaundromatService = async (laundromatData) => {
   // Start a session for the transaction
   const session = await mongoose.startSession();
-  session.startTransaction();
+  let isAborted = false; // Track if transaction was aborted
 
   try {
+    console.log("Starting transaction...");
+    session.startTransaction(); // Explicitly start the transaction here
+
     console.log("Checking if laundromat already exists");
     const existingLaundromat = await Laundromat.findOne({
       name: laundromatData.name,
-    }).session(session);
+    }).session(session); // Pass session to operations
+
     if (existingLaundromat) {
       console.log("Laundromat already exists. Choose a different name.");
       const err = new Error(
@@ -169,34 +151,41 @@ export const createLaundromatService = async (laundromatData) => {
       ...laundromatData,
     });
 
-    await newLaundromat.save({ session });
+    await newLaundromat.save({ session }); // Save with session
 
     console.log("Updating user with laundromat ID");
     const adminUser = await User.findById(laundromatData.admin).session(
       session
-    ); // Find the admin user
+    ); // Find the admin user with session
 
     if (!adminUser) {
-      // If the admin user is not found, we should abort the transaction and throw an error
-      await session.abortTransaction();
-      session.endSession();
+      // If the admin user is not found, abort the transaction
       const err = new Error("Admin user not found");
       err.statusCode = 404;
       throw err;
     }
 
-    adminUser.laundromat = newLaundromat._id; // Assign the new laundromat's ID to the user's laundromat field
+    adminUser.laundromat = newLaundromat._id; // Assign laundromat ID to the user
     await adminUser.save({ session }); // Save the updated user
-    // ----------------------------------------------------------------------
 
-    await session.commitTransaction();
-    session.endSession();
+    console.log("Committing transaction...");
+    await session.commitTransaction(); // Commit transaction if everything is successful
 
-    return newLaundromat;
+    console.log("Transaction committed.");
+    return {newLaundromat, adminUser}; // Return the created laundromat and updated user
   } catch (error) {
     console.log("Error creating laundromat:", error.message);
-    await session.abortTransaction();
-    session.endSession();
-    throw error;
+    if (!isAborted) {
+      // Abort transaction only once
+      console.log("Aborting transaction...");
+      await session.abortTransaction();
+      isAborted = true;
+    }
+    throw error; // Rethrow the error for handling elsewhere
+  } finally {
+    console.log("Ending session...");
+    session.endSession(); // End the session whether successful or failed
   }
 };
+
+

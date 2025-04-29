@@ -33,8 +33,7 @@ const userSchema = new mongoose.Schema(
     },
     verificationExpiresAt: {
       type: Date,
-      default: () => new Date(Date.now() + 10 * 60 * 1000),
-      index: { expires: "10m" },
+      default: () => new Date(Date.now() + 10 * 60 * 1000)
     },
     role: {
       type: String,

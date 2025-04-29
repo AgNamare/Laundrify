@@ -85,6 +85,10 @@ const laundromatSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    image:{
+      type: String,
+      required: false,
+    },
     services: [serviceSchema],  // Main services like washing, folding, etc.
   },
   { timestamps: true }

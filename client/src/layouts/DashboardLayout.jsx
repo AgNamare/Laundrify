@@ -5,8 +5,8 @@ import logo from "../assets/images/logo.png";
 
 const DashboardLayout = () => {
   const location = useLocation();
-  const user = useSelector((state) => state.user?.user?.user);
-  const laundromatId = user?.laundromat;
+  const user = useSelector((state) => state.user?.user);
+  const laundromatId = user?.laundromat || user?.user?.laundromat;
 
   return (
     <div className="flex min-h-screen">
