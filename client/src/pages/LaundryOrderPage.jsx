@@ -2,7 +2,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft, MoreVertical, MapPin, LucideSprayCan } from "lucide-react";
-import Machine from "../assets/illustrations/machine.svg";
+import Machine from "../assets/illustrations/Machine.svg";
 
 
 import { setOrderDetails } from "../redux/orderSlice";
