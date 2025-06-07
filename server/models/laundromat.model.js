@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-// models/laundromat.model.js
-import mongoose from "mongoose";
-
-const laundromatSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    location: {
-      type: { type: String, enum: ["Point"], default: "Point" },
-      coordinates: { type: [Number], required: true },
-    },
-    address: { type: String, required: true },
-    phoneNumber: { type: String, required: true },
-    services: [{ type: String }],
-    rating: { type: Number, default: 0 },
-=======
 import mongoose from "mongoose";
 
 // Optional Service Schema for add-ons
@@ -106,7 +90,6 @@ const laundromatSchema = new mongoose.Schema(
       required: false,
     },
     services: [serviceSchema],  // Main services like washing, folding, etc.
->>>>>>> 64337caac653959785995131113ab12120a2a5c7
   },
   { timestamps: true }
 );
