@@ -95,11 +95,7 @@ const laundromatSchema = new mongoose.Schema(
 );
 
 laundromatSchema.index({ location: "2dsphere" });
-<<<<<<< HEAD
-const Laundromat = mongoose.model("Laundromat", laundromatSchema);
-=======
 
 const Laundromat = mongoose.model("Laundromat", laundromatSchema);
 
->>>>>>> 64337caac653959785995131113ab12120a2a5c7
 export default Laundromat;
