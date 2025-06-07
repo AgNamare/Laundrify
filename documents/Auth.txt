@@ -1,0 +1,7 @@
+OTP verification  /api/v1/auth/verify
+	{success:true}
+	{sucess:false}
+
+login /api/v1/auth/login 
+	{success:true, user:{}}
+	{success:false, message:""}

@@ -1,29 +1,90 @@
-import app from "./app.js";
-import express from "express";
-import connectDB from "./config/db.js";
 import dotenv from "dotenv";
-import cors from "cors";
+import mongoose from "mongoose";
+import http from "http";
+import { Server } from "socket.io";
+import app from "./app.js";
+import authRoutes from "./routes/auth.route.js";
+import cookieParser from 'cookie-parser';
+import laundromatRoutes from "./routes/laundromat.route.js";
+import clothesRoutes from "./routes/clothesType.route.js";
 import orderRoutes from "./routes/order.routes.js";
-import laundromatRoutes from "./routes/laundromat.routes.js";
+import errorHandler from "./middlewares/error.middleware.js";
+import reviewRoutes from "./routes/review.routes.js";
+import cors from "cors";
+import mpesaRoutes from './routes/mpesa.routes.js';
+import userRoutes from './routes/user.route.js';
+import chatRoutes from "./routes/chat.routes.js";
+import messageRoutes from "./routes/message.routes.js";
 
+// Load environment variables
 dotenv.config();
-connectDB();
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.get("/api/test", (req, res) => {
-    res.json({ message: "API is working!" });
-});
-
-app.use("/api/v1/orders", orderRoutes);
-
-app.use("/api/laundromats", laundromatRoutes);
-
+const MONGO_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+// Create HTTP server
+const server = http.createServer(app);
+
+// Attach socket.io to the server
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173", "https://laundrify-app.onrender.com"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  },
+});
+
+// Socket.IO logic
+io.on("connection", (socket) => {
+  console.log("🟢 New client connected:", socket.id);
+
+  socket.on("join_chat", (chatId) => {
+    socket.join(chatId);
+    console.log(`🔵 User joined chat room: ${chatId}`);
+  });
+
+  socket.on("send_message", (message) => {
+    const { chatId } = message;
+    socket.to(chatId).emit("receive_message", message);
+    console.log(`📩 Message sent to chat ${chatId}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 Client disconnected:", socket.id);
+  });
+});
+
+// Connect to MongoDB
+mongoose
+  .connect(MONGO_URI)
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.log("❌ MongoDB connection error:", err));
+
+// Middlewares and Routes
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://laundrify-app.onrender.com"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+app.use(cookieParser());
+
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/laundromats", laundromatRoutes);
+app.use("/api/v1/clothes-types", clothesRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/mpesa", mpesaRoutes);
+app.use("/api/v1/chats", chatRoutes);
+app.use("/api/v1/messages", messageRoutes);
+
+app.use(errorHandler);
+
+app.set("io", io); 
+// Start the server
+server.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
