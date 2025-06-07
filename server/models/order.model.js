@@ -7,14 +7,11 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-<<<<<<< HEAD
-=======
     driver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: false,
     },
->>>>>>> 64337caac653959785995131113ab12120a2a5c7
     laundromat: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Laundromat",
