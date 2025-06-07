@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASEURL = "laundrify-backend-auc4dhamg6auhpcu.canadacentral-01.azurewebsites.net";
+const BASEURL = "https://laundrify.onrender.com";
 
 export default axios.create({
   baseURL: BASEURL,
