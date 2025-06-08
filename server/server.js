@@ -16,6 +16,7 @@ import mpesaRoutes from './routes/mpesa.routes.js';
 import userRoutes from './routes/user.route.js';
 import chatRoutes from "./routes/chat.routes.js";
 import messageRoutes from "./routes/message.routes.js";
+import path from "path";
 
 if (process.env.NODE_ENV === 'production') {
   // Set the static folder to the build folder from React
