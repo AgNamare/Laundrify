@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { LoadScript } from "@react-google-maps/api";
+import { LoadScriptNext } from "@react-google-maps/api";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import VerifyCodePage from "./pages/VerifyCodePage.jsx";
@@ -25,10 +25,13 @@ import ChatPage from "./pages/ChatPage.jsx";
 const libraries = ["places"];
 
 function AppRoutes() {
+  const [isLoaded, setIsLoaded] = useState(false);
   return (
-    <LoadScript
+    <LoadScriptNext
       googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
       libraries={libraries}
+      onLoad={() => setIsLoaded(true)}
+      onError={(e) => console.error("Google Maps failed to load", e)}
     >
       <Routes>
         <Route path="/register" element={<RegisterPage />} />
