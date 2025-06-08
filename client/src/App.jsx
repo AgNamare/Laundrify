@@ -87,7 +87,7 @@ function AppRoutes() {
           <Route path="/laundromat" element={<DashboardLayout />} />
         </Route>
       </Routes>
-    </LoadScript>
+    </LoadScriptNext>
   );
 }
 
