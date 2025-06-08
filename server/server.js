@@ -16,6 +16,16 @@ import userRoutes from './routes/user.route.js';
 import chatRoutes from "./routes/chat.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 
+if (process.env.NODE_ENV === 'production') {
+  // Set the static folder to the build folder from React
+  app.use(express.static(path.join(__dirname, '../client/build')));
+
+  // Catch-all route to serve the React index.html for all non-API requests
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
+  });
+}
+
 // Load environment variables
 dotenv.config();
 
