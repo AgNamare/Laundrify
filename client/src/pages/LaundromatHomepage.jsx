@@ -11,7 +11,7 @@ import washingMachine from "../assets/illustrations/washing_machine.png";
 import { setUserLocation } from "../redux/locationSlice";
 
 const LaundromatHomepage = () => {
-  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const GOOGLE_MAPS_API_KEY = "AIzaSyBSvhLpT9Mw-_39lx-7houaYb-8nzyfcQA";
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user?.user?.user);
