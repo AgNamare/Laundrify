@@ -22,15 +22,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-if (process.env.NODE_ENV === 'production') {
-  // Set the static folder to the build folder from React
-  app.use(express.static(path.join(__dirname, '../client/dist')));
-
-  // Catch-all route to serve the React index.html for all non-API requests
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
-  });
-}
 
 // Load environment variables
 dotenv.config();
@@ -53,7 +44,7 @@ const io = new Server(server, {
 // Socket.IO logic
 io.on("connection", (socket) => {
   console.log("🟢 New client connected:", socket.id);
-
+  
   socket.on("join_chat", (chatId) => {
     socket.join(chatId);
     console.log(`🔵 User joined chat room: ${chatId}`);
@@ -72,9 +63,9 @@ io.on("connection", (socket) => {
 
 // Connect to MongoDB
 mongoose
-  .connect(MONGO_URI)
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => console.log("❌ MongoDB connection error:", err));
+.connect(MONGO_URI)
+.then(() => console.log("✅ Connected to MongoDB"))
+.catch((err) => console.log("❌ MongoDB connection error:", err));
 
 // Middlewares and Routes
 app.use(
@@ -100,6 +91,12 @@ app.use("/api/v1/messages", messageRoutes);
 app.use(errorHandler);
 
 app.set("io", io); 
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// Catch-all route to serve the React index.html for all non-API requests
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
+});
 // Start the server
 server.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);

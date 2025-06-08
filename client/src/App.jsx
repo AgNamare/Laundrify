@@ -29,7 +29,7 @@ function AppRoutes() {
   const [isLoaded, setIsLoaded] = useState(false);
   return (
     <LoadScriptNext
-      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+      googleMapsApiKey="AIzaSyBSvhLpT9Mw-_39lx-7houaYb-8nzyfcQA"
       libraries={libraries}
       onLoad={() => setIsLoaded(true)}
       onError={(e) => console.error("Google Maps failed to load", e)}
